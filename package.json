@@ -1,0 +1,26 @@
+{
+  "name": "snesie-website",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Website van Stichting Snesie& (snesie.nl)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource/noto-serif-sc": "^5.3.1",
+    "astro": "^6.4.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

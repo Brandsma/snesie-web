@@ -1,0 +1,431 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/home/Hero.astro';
+import Timeline from '@/components/home/Timeline.astro';
+import FamilyTree from '@/components/home/FamilyTree.astro';
+import ContactForm from '@/components/home/ContactForm.astro';
+import { img } from '@/lib/images';
+import { FILES } from '@/lib/site';
+import { getEvents, teaserTitle } from '@/lib/events';
+import { formatLong, isPast, parseLocal } from '@/lib/dates';
+
+const MISSION = [
+  'De vergeten geschiedenis van Chinese contractarbeid en migratie documenteren',
+  'De zwijgcultuur tussen generaties doorbreken',
+  'Historisch bewustzijn en identiteitskracht versterken',
+  'Bijdragen aan een inclusiever verhaal over de Nederlandse koloniale geschiedenis.',
+];
+
+const UNTOLD = [
+  'Over Chinese vrouwen die per schip naar een onbekend land reisden om te trouwen met een man die ze alleen van een foto kenden.',
+  'Over kinderen die naar China werden gestuurd om de taal en cultuur van hun voorouders te leren.',
+  'Over gezinnen met Chinese én Creoolse wortels, waarvan de namen van moeders en grootmoeders langzaam uit het familiegeheugen verdwenen.',
+  'Over mensen die leerden zwijgen, omdat doorgaan belangrijker was dan terugkijken.',
+];
+
+/* "Volgende" teaser: rendered with the build date, refreshed in the browser. */
+const teasers = (await getEvents())
+  .filter((e) => !e.deadline)
+  .map((e) => ({ start: e.start, label: `${teaserTitle(e)} · ${formatLong(parseLocal(e.start), { year: false, capital: false })}` }));
+const NO_EVENTS = 'Binnenkort nieuwe events';
+const nextLabel = teasers.find((t) => !isPast(parseLocal(t.start)))?.label ?? NO_EVENTS;
+---
+
+<BaseLayout
+  title="Snesie& · Chinese zielen, Surinaamse wortels, Nederlandse stemmen"
+  description="Snesie& maakt de geschiedenis en het erfgoed van Chinees-Surinaamse, met name Hakka-Chinese, gemeenschappen zichtbaar. Ontdek je roots, deel je verhaal."
+>
+  <Hero />
+
+  <section id="verhaal" class="verhaal">
+    <div class="container verhaal-inner">
+      <div class="label label--rule verhaal-label">Wij · Snesie&amp;</div>
+      <p class="verhaal-quote">Iedereen heeft een verhaal, maar niet alle verhalen worden gehoord.</p>
+      <p class="verhaal-sub">
+        Verhalen die vaak nooit zijn opgeschreven, maar wel zijn doorgegeven – soms in een paar woorden, een oude foto of
+        juist in een lange stilte.
+      </p>
+    </div>
+  </section>
+
+  <section id="missie" class="container section">
+    <div class="two-col">
+      <div data-reveal>
+        <div class="label">Onze missie</div>
+        <h2 class="h-section h-section--xl mt-20">“Coming home!”</h2>
+        <p class="body-lg mt-28">
+          Snesie&amp; zet zich in voor het zichtbaar maken, onderzoeken en delen van de geschiedenis en het erfgoed van
+          Chinees-Surinaamse, met name de Hakka-Chinese, gemeenschappen.
+        </p>
+        <p class="body-lg mt-16">
+          Door onderzoek, erfgoedparticipatie en maatschappelijke dialoog brengen we familieverhalen, geschiedenis en
+          cultuur samen.
+        </p>
+      </div>
+      <div>
+        <div class="label label--muted list-label" data-reveal>Wij willen</div>
+        <ol class="numbered">
+          {
+            MISSION.map((t, i) => (
+              <li data-reveal data-delay={i * 110}>
+                <span class="num">0{i + 1}</span>
+                <span class="num-text">{t}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="visie">
+    <div class="container visie-inner">
+      <figure class="visie-photo" data-reveal>
+        <Image
+          src={img('tjon-moek-sang.jpg')}
+          alt="Iconisch gebouw Tjon Moek Sang"
+          widths={[480, 720, 960, 1300]}
+          sizes="(min-width: 980px) 50vw, 100vw"
+          width={1300}
+          height={975}
+          fit="cover"
+        />
+      </figure>
+      <div data-reveal>
+        <div class="label">Onze visie</div>
+        <h2 class="h-sub mt-20">Weet je waar je vandaan komt, dan weet je waar je heen gaat.</h2>
+        <p class="body-lg mt-28">
+          Snesie&amp; streeft naar een samenleving waarin Chinees-Surinaams erfgoed wordt erkend als een integraal onderdeel
+          van de Nederlandse geschiedenis.
+        </p>
+        <p class="photo-credit">Foto: iconisch gebouw Tjon Moek Sang</p>
+      </div>
+    </div>
+  </section>
+
+  <Timeline />
+
+  <section class="container museum">
+    <div class="two-col">
+      <div data-reveal>
+        <h2 class="h-section">Dit is geen museum; dit is wie wij zijn.</h2>
+        <p class="body-lg mt-28">
+          De geschiedenis van de Surinaams-Chinese gemeenschap bestaat niet alleen uit jaartallen en scheepslijsten. Ze
+          bestaat uit mensen. Uit keuzes. Uit verlies, hoop, doorzettingsvermogen en liefde.
+        </p>
+        <div class="pdfs">
+          <a href={FILES.tijdlijn} target="_blank" rel="noopener" class="btn btn--secondary">Tijdlijn (PDF)</a>
+          <a href={FILES.wegVanDeChinees} target="_blank" rel="noopener" class="btn btn--secondary">De weg van de Chinees (PDF)</a>
+        </div>
+      </div>
+      <div>
+        <div class="label label--muted list-label" data-reveal>Verhalen die nauwelijks in boeken voorkomen</div>
+        {
+          UNTOLD.map((t, i) => (
+            <p class="untold" data-reveal data-delay={i * 110}>
+              {t}
+            </p>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <FamilyTree />
+
+  <section id="events" class="events-band">
+    <a href="/events/" class="container band-link">
+      <div data-reveal>
+        <div class="label band-label">Events | Workshops</div>
+        <h2 class="band-title">Chinees, Surinaams, Nederlands, zonder een van die drie te verloochenen</h2>
+      </div>
+      <div class="band-next" data-reveal data-delay="120">
+        <div class="band-next-label">Volgende</div>
+        <div class="band-next-title" data-next-event>{nextLabel}</div>
+        <span class="btn btn--light band-btn">Bekijk alle events →</span>
+      </div>
+    </a>
+    <script type="application/json" data-teasers set:html={JSON.stringify({ teasers, empty: NO_EVENTS })} />
+  </section>
+
+  <section id="join" class="join">
+    <div class="container section two-col">
+      <div data-reveal>
+        <div class="label join-label">Join us</div>
+        <h2 class="h-section h-section--xl mt-20">Deel je verhaal</h2>
+        <p class="body-lg join-text mt-28">
+          Of je nu nieuwsgierig bent naar je eigen Chinees-Surinaamse roots, verhalen van vroeger wilt horen of je
+          ervaringen wilt delen met de nieuwe generatie: dit is hét moment om samen te komen en te bouwen aan een toekomst
+          waarin ons erfgoed blijft leven. Stambomen en oral history zijn de key words, join us!
+        </p>
+        <a href="/join-us/" class="join-pill">Vrijwilliger of Community Researcher worden? <span>Join us →</span></a>
+      </div>
+      <div data-reveal data-delay="120">
+        <ContactForm />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .mt-16 {
+    margin-top: 16px;
+  }
+
+  .mt-20 {
+    margin-top: 20px;
+  }
+
+  .mt-28 {
+    margin-top: 28px;
+  }
+
+  p.body-lg {
+    margin-bottom: 0;
+  }
+
+  /* Wij intro */
+  .verhaal {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .verhaal-inner {
+    padding-block: clamp(88px, 14vh, 160px);
+  }
+
+  .verhaal-label {
+    color: var(--blue-light);
+  }
+
+  .verhaal-quote {
+    font-family: var(--font-serif);
+    font-size: clamp(34px, 5.6vw, 84px);
+    line-height: 1.06;
+    letter-spacing: -0.022em;
+    margin: 28px 0 0;
+    max-width: 15.5em;
+    text-wrap: balance;
+  }
+
+  .verhaal-sub {
+    font-size: clamp(17px, 1.35vw, 20px);
+    line-height: 1.6;
+    max-width: 36em;
+    margin: clamp(28px, 5vh, 48px) 0 0;
+    color: var(--on-ink-soft);
+  }
+
+  /* Missie */
+  .list-label {
+    padding-bottom: 16px;
+  }
+
+  .numbered {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .numbered li {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 16px;
+    align-items: baseline;
+    padding: 22px 0;
+    border-top: 1px solid var(--sand-line);
+  }
+
+  .num {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--blue);
+  }
+
+  .num-text {
+    font-family: var(--font-serif);
+    font-size: clamp(22px, 2vw, 28px);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  /* Visie */
+  .visie {
+    background: var(--sand);
+  }
+
+  .visie-inner {
+    padding-block: clamp(72px, 11vh, 140px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: var(--col-gap);
+    align-items: center;
+  }
+
+  .visie-photo {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  .visie-photo :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transform: scale(1.06);
+  }
+
+  .visie .body-lg {
+    max-width: 32em;
+  }
+
+  .photo-credit {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 24px 0 0;
+  }
+
+  /* Geen museum */
+  .museum {
+    padding-top: var(--section-y);
+    padding-bottom: clamp(40px, 6vh, 72px);
+  }
+
+  .pdfs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .pdfs .btn {
+    padding: 14px 22px;
+  }
+
+  .untold {
+    margin: 0;
+    padding: 22px 0;
+    border-top: 1px solid var(--sand-line);
+    font-family: var(--font-serif);
+    font-size: clamp(20px, 1.8vw, 25px);
+    line-height: 1.35;
+  }
+
+  /* Events band */
+  .events-band {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .band-link {
+    padding-block: clamp(56px, 9vh, 104px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    gap: 24px var(--col-gap);
+    align-items: end;
+    text-decoration: none;
+    color: var(--paper);
+  }
+
+  .band-link:hover {
+    color: var(--paper);
+  }
+
+  .band-link:hover .band-btn {
+    background: #fff;
+    color: var(--blue);
+  }
+
+  .band-label {
+    color: var(--blue-light);
+  }
+
+  .band-title {
+    font-family: var(--font-serif);
+    font-size: clamp(34px, 4.4vw, 64px);
+    line-height: 1.04;
+    letter-spacing: -0.022em;
+    margin-top: 20px;
+  }
+
+  .band-next {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(245, 240, 231, 0.25);
+  }
+
+  .band-next-label {
+    font-size: 14px;
+    color: var(--blue-light);
+  }
+
+  .band-next-title {
+    font-family: var(--font-serif);
+    font-size: clamp(24px, 2.4vw, 32px);
+    line-height: 1.2;
+  }
+
+  .band-btn {
+    align-self: flex-start;
+  }
+
+  /* Join */
+  .join {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .join-label {
+    color: var(--on-blue-label);
+  }
+
+  .join-text {
+    color: var(--on-blue-soft);
+  }
+
+  .join-pill {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 14px;
+    margin-top: 32px;
+    padding: 16px 24px;
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 28px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  .join-pill:hover {
+    background: #fff;
+    color: var(--blue);
+  }
+
+  #verhaal,
+  #stambomen,
+  #events,
+  #join {
+    scroll-margin-top: 0;
+  }
+</style>
+
+<script>
+  import { isPast, parseLocal } from '@/lib/dates';
+
+  // Re-evaluate the "Volgende" teaser with the visitor's date.
+  const el = document.querySelector<HTMLElement>('[data-next-event]');
+  const data = document.querySelector<HTMLScriptElement>('[data-teasers]');
+  if (el && data) {
+    const { teasers, empty } = JSON.parse(data.textContent || '{}') as { teasers: { start: string; label: string }[]; empty: string };
+    el.textContent = teasers.find((t) => !isPast(parseLocal(t.start)))?.label ?? empty;
+  }
+</script>

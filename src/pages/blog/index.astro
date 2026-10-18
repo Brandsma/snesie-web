@@ -1,0 +1,244 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { img } from '@/lib/images';
+import { getPosts, formatPostDate, postHref } from '@/components/blog/posts';
+
+const posts = await getPosts();
+const tags = ['Alles', ...new Set(posts.map((p) => p.data.tag))];
+---
+
+<BaseLayout
+  title="Blog: Inspiratie en tips"
+  description="Volg ons via de Snesie& blog voor updates, het laatste nieuws en doe vooral inspiratie op."
+  current="media"
+>
+  <section class="blog container">
+    <div class="crumbs">
+      <a href="/media/">Media</a><span>Blog</span>
+    </div>
+    <h1>Snesie &amp; Blog: <em>Inspiratie en tips</em></h1>
+    <p class="lede">Volg ons via de Snesie&amp; blog voor updates, het laatste nieuws en doe vooral inspiratie op.</p>
+
+    <div class="tags" role="group" aria-label="Filter op onderwerp" data-tags hidden>
+      {
+        tags.map((t, i) => (
+          <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-tag={t}>
+            {t}
+          </button>
+        ))
+      }
+    </div>
+
+    <ul class="list" role="list">
+      {
+        posts.map((p) => {
+          const date = formatPostDate(p.data.date);
+          return (
+            <li data-post-tag={p.data.tag}>
+              <a href={postHref(p)} class="row">
+                <span class="thumb">
+                  <Image
+                    src={img(p.data.hero)}
+                    alt=""
+                    width={296}
+                    height={296}
+                    fit="cover"
+                    widths={[176, 296]}
+                    sizes="(max-width: 639px) 88px, 148px"
+                  />
+                </span>
+                <span class="text">
+                  <span class="meta-top">
+                    {p.data.tag}
+                    {date && ` · ${date}`}
+                  </span>
+                  <span class="title">{p.data.title}</span>
+                  <span class="meta">
+                    {p.data.author} · {p.data.read}
+                  </span>
+                </span>
+                <span class="arrow" aria-hidden="true">
+                  →
+                </span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog {
+    padding-top: clamp(120px, 17vh, 180px);
+    padding-bottom: var(--section-y);
+  }
+
+  .crumbs {
+    display: flex;
+    gap: 18px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  .crumbs a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--blue);
+  }
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(48px, 8vw, 124px);
+    line-height: 0.95;
+    letter-spacing: -0.032em;
+    margin-top: 20px;
+  }
+
+  h1 em {
+    color: var(--blue);
+  }
+
+  .lede {
+    margin: 28px 0 0;
+    font-size: clamp(17px, 1.35vw, 20px);
+    line-height: 1.55;
+    color: var(--body-soft);
+    max-width: 30em;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 40px;
+  }
+
+  .tags .chip {
+    flex: none;
+    padding: 0 18px;
+    font-size: 15px;
+  }
+
+  .list {
+    margin: 40px 0 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--sand-line-strong);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 24px;
+    gap: clamp(16px, 2.4vw, 40px);
+    align-items: center;
+    padding: 24px 0;
+    border-top: 1px solid var(--sand-line-strong);
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .thumb {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--sand);
+    transition: transform 0.6s var(--ease-out);
+  }
+
+  .thumb :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .meta-top {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  .title {
+    font-family: var(--font-serif);
+    font-size: clamp(22px, 2.6vw, 38px);
+    line-height: 1.12;
+    letter-spacing: -0.012em;
+    text-wrap: pretty;
+    transition: color 0.25s;
+  }
+
+  .meta {
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .arrow {
+    font-size: 22px;
+    transition:
+      color 0.25s,
+      transform 0.25s;
+  }
+
+  .row:hover .thumb,
+  .row:focus-visible .thumb {
+    transform: scale(1.04) rotate(-1.5deg);
+  }
+
+  .row:hover .title,
+  .row:focus-visible .title,
+  .row:hover .arrow,
+  .row:focus-visible .arrow {
+    color: var(--blue);
+  }
+
+  .row:hover .arrow,
+  .row:focus-visible .arrow {
+    transform: translateX(6px);
+  }
+
+  @media (min-width: 640px) {
+    .row {
+      grid-template-columns: 148px minmax(0, 1fr) 32px;
+    }
+  }
+</style>
+
+<script>
+  // Old prototype links used hashes (/blog/#essay): forward them to the post page.
+  const slug = location.hash.slice(1);
+  if (/^[a-z0-9-]+$/i.test(slug) && document.querySelector(`a.row[href="/blog/${slug}/"]`)) {
+    location.replace(`/blog/${slug}/`);
+  }
+
+  // Tag filter. Without JS the chips stay hidden and every post is listed.
+  const group = document.querySelector<HTMLElement>('[data-tags]')!;
+  const chips = [...group.querySelectorAll<HTMLButtonElement>('[data-tag]')];
+  const items = [...document.querySelectorAll<HTMLElement>('[data-post-tag]')];
+  group.hidden = false;
+
+  for (const chip of chips) {
+    chip.addEventListener('click', () => {
+      const tag = chip.dataset.tag!;
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      items.forEach((li) => (li.hidden = tag !== 'Alles' && li.dataset.postTag !== tag));
+    });
+  }
+</script>

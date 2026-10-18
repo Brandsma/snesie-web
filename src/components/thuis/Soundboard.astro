@@ -1,0 +1,364 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '@/lib/images';
+
+/*
+ * "Welk geluid brengt jou terug naar huis?"
+ * The sounds are synthesised with WebAudio for now. To use a real recording,
+ * add `src` for that id in SOUNDS inside the <script> below (see the TODO).
+ */
+const TILES = [
+  { id: 'wok', t: 'Het sissen van een wok in de keuken.' },
+  { id: 'mj', t: 'Het geluid van Mahjong-stenen op tafel.' },
+  { id: 'song', t: 'Een Hakka Mountain Song die een grootouder zong.' },
+];
+---
+
+<section class="board">
+  <div class="container section">
+    <div class="board-head">
+      <div data-reveal>
+        <h2 class="board-title">Welk geluid brengt jou terug naar huis?</h2>
+        <p class="board-intro">
+          Niet iedereen heeft een herinnering aan een Hakka-lied, maar bijna iedereen heeft een geluid dat verbonden is met
+          familie.
+        </p>
+      </div>
+      <figure data-reveal>
+        <Image
+          src={img('family-home.jpg')}
+          alt="Family home"
+          widths={[480, 800, 1200]}
+          sizes="(min-width: 980px) 600px, 100vw"
+          class="board-img"
+        />
+      </figure>
+    </div>
+
+    <div class="hint">Tik om te luisteren</div>
+    <div class="tiles">
+      {
+        TILES.map((s, i) => (
+          <button type="button" class="tile" aria-pressed="false" data-sound={s.id} data-reveal data-delay={i * 80}>
+            <span class="bars" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <span />
+            </span>
+            <span class="tile-text">{s.t}</span>
+          </button>
+        ))
+      }
+      <a href="/#join" class="tile" data-reveal data-delay={3 * 80}>
+        <span class="bars" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+        </span>
+        <span class="tile-text">De stem van je moeder of opa die je naam roept. Neem het op en deel het met ons →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .board {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .board-head {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(32px, 5vw, 80px);
+    align-items: end;
+  }
+
+  .board-title {
+    font-family: var(--font-serif);
+    font-size: clamp(38px, 5vw, 76px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+
+  .board-intro {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--on-blue-soft);
+    margin: 24px 0 0;
+    max-width: 30em;
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  .board-img {
+    width: 100%;
+    aspect-ratio: 12 / 7;
+    object-fit: cover;
+    border-radius: 2px;
+  }
+
+  .hint {
+    font-size: 13px;
+    color: var(--on-blue-label);
+    margin-top: clamp(48px, 7vh, 80px);
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .tile {
+    text-align: left;
+    min-height: 200px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: transparent;
+    color: #fff;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    text-decoration: none;
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      border-color 0.3s;
+  }
+
+  .tile:hover {
+    border-color: #fff;
+    color: #fff;
+  }
+
+  .tile[aria-pressed='true'] {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 28px;
+  }
+
+  .bars span {
+    width: 4px;
+    height: 100%;
+    background: currentColor;
+    border-radius: 2px;
+    transform-origin: bottom;
+    transform: scaleY(0.25);
+  }
+
+  .tile[aria-pressed='true'] .bars span {
+    animation: sn-bar 0.5s ease-in-out infinite;
+  }
+
+  .tile[aria-pressed='true'] .bars span:nth-child(2) {
+    animation-duration: 0.63s;
+    animation-delay: 0.07s;
+  }
+
+  .tile[aria-pressed='true'] .bars span:nth-child(3) {
+    animation-duration: 0.76s;
+    animation-delay: 0.14s;
+  }
+
+  .tile[aria-pressed='true'] .bars span:nth-child(4) {
+    animation-duration: 0.89s;
+    animation-delay: 0.21s;
+  }
+
+  .tile-text {
+    font-family: var(--font-serif);
+    font-size: 23px;
+    line-height: 1.25;
+    text-wrap: pretty;
+  }
+
+  @keyframes sn-bar {
+    0%,
+    100% {
+      transform: scaleY(0.25);
+    }
+
+    50% {
+      transform: scaleY(1);
+    }
+  }
+</style>
+
+<script>
+  interface Sound {
+    /** Seconds the tile shows as playing. */
+    dur: number;
+    /** Licensed recording; when set it replaces the synthesised sound. */
+    src?: string;
+  }
+
+  // TODO: replace the synthesised placeholders with licensed recordings, e.g.
+  // put files in /public/audio and set { dur: 2.6, src: '/audio/wok.mp3' }.
+  const SOUNDS: Record<string, Sound> = {
+    wok: { dur: 2.6 },
+    mj: { dur: 2.2 },
+    song: { dur: 6.4 },
+  };
+
+  let ctx: AudioContext | null = null;
+  let bus: GainNode | null = null;
+  let el: HTMLAudioElement | null = null;
+  let timer = 0;
+  let playing: string | null = null;
+
+  /** Lazily create the AudioContext (only after a user gesture) and a fresh output bus. */
+  function audio(): AudioContext {
+    if (!ctx) {
+      const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      ctx = new Ctor();
+    }
+    if (ctx.state === 'suspended') void ctx.resume();
+    bus?.disconnect();
+    bus = ctx.createGain();
+    bus.gain.value = 0.9;
+    bus.connect(ctx.destination);
+    return ctx;
+  }
+
+  function noise(c: AudioContext, secs: number) {
+    const buffer = c.createBuffer(1, Math.ceil(c.sampleRate * secs), c.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const src = c.createBufferSource();
+    src.buffer = buffer;
+    return src;
+  }
+
+  function ping(c: AudioContext, t: number, f: number, dur: number, vol: number, type: OscillatorType = 'sine') {
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = type;
+    o.frequency.value = f;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g);
+    g.connect(bus!);
+    o.start(t);
+    o.stop(t + dur + 0.05);
+  }
+
+  const synth: Record<string, (c: AudioContext, now: number) => void> = {
+    wok(c, now) {
+      const n = noise(c, 2.6);
+      const hp = c.createBiquadFilter();
+      const g = c.createGain();
+      hp.type = 'highpass';
+      hp.frequency.value = 2400;
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(0.32, now + 0.08);
+      for (let t = 0.1; t < 2.3; t += 0.035) g.gain.setValueAtTime(0.14 + Math.random() * 0.22, now + t);
+      g.gain.linearRampToValueAtTime(0, now + 2.55);
+      n.connect(hp);
+      hp.connect(g);
+      g.connect(bus!);
+      n.start(now);
+    },
+    mj(c, now) {
+      let t = 0;
+      for (let i = 0; i < 14; i++) {
+        t += 0.06 + Math.random() * 0.14;
+        const n = noise(c, 0.05);
+        const bp = c.createBiquadFilter();
+        const g = c.createGain();
+        bp.type = 'bandpass';
+        bp.frequency.value = 1500 + Math.random() * 900;
+        bp.Q.value = 3;
+        g.gain.setValueAtTime(0.9, now + t);
+        g.gain.exponentialRampToValueAtTime(0.001, now + t + 0.045);
+        n.connect(bp);
+        bp.connect(g);
+        g.connect(bus!);
+        n.start(now + t);
+        ping(c, now + t, 900 + Math.random() * 400, 0.05, 0.08, 'triangle');
+      }
+    },
+    song(c, now) {
+      const notes = [392, 440, 523.25, 587.33, 659.25, 783.99];
+      const melody: [number, number][] = [[3, 0.5], [4, 0.5], [5, 1], [4, 0.5], [3, 0.5], [2, 1], [3, 0.5], [2, 0.25], [1, 0.25], [0, 1.4]];
+      let t = 0;
+      for (const [i, d] of melody) {
+        const o = c.createOscillator();
+        const vib = c.createOscillator();
+        const vibGain = c.createGain();
+        const g = c.createGain();
+        o.type = 'triangle';
+        o.frequency.value = notes[i];
+        vib.frequency.value = 5.2;
+        vibGain.gain.value = notes[i] * 0.012;
+        vib.connect(vibGain);
+        vibGain.connect(o.frequency);
+        const s = now + t;
+        const e = s + d * 1.1;
+        g.gain.setValueAtTime(0, s);
+        g.gain.linearRampToValueAtTime(0.16, s + 0.08);
+        g.gain.setValueAtTime(0.14, e - 0.12);
+        g.gain.linearRampToValueAtTime(0, e);
+        o.connect(g);
+        g.connect(bus!);
+        o.start(s);
+        vib.start(s);
+        o.stop(e + 0.05);
+        vib.stop(e + 0.05);
+        t += d * 1.1;
+      }
+    },
+  };
+
+  function stop() {
+    bus?.disconnect();
+    el?.pause();
+  }
+
+  function play(id: string) {
+    const sound = SOUNDS[id];
+    stop();
+    if (sound.src) {
+      el = new Audio(sound.src);
+      el.play().catch(() => {});
+      return;
+    }
+    const c = audio();
+    synth[id](c, c.currentTime + 0.02);
+  }
+
+  const tiles = [...document.querySelectorAll<HTMLButtonElement>('[data-sound]')];
+  const setPlaying = (id: string | null) => {
+    playing = id;
+    tiles.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.sound === id)));
+  };
+
+  tiles.forEach((tile) =>
+    tile.addEventListener('click', () => {
+      const id = tile.dataset.sound!;
+      clearTimeout(timer);
+      if (playing === id) {
+        stop();
+        setPlaying(null);
+        return;
+      }
+      play(id);
+      setPlaying(id);
+      timer = window.setTimeout(() => setPlaying(null), SOUNDS[id].dur * 1000);
+    }),
+  );
+</script>

@@ -1,0 +1,160 @@
+---
+/**
+ * Shared photo lightbox. Mark gallery links with data-lightbox="<group>":
+ *
+ *   <a href={fullSizeUrl} data-lightbox="in-beeld"><Image … /></a>
+ *
+ * Without JavaScript the link simply opens the full image. With JavaScript it
+ * opens this native <dialog> (modal, focus-trapped, Esc closes) with prev/next
+ * buttons and arrow-key navigation. Include this component once per page.
+ */
+---
+
+<dialog class="lightbox" aria-label="Foto vergroot" data-lightbox-dialog>
+  <div class="stage" data-lightbox-stage>
+    <img alt="" data-lightbox-img decoding="async" />
+  </div>
+  <div class="controls">
+    <button type="button" class="round" aria-label="Vorige" data-lightbox-prev>←</button>
+    <span class="count" aria-live="polite" data-lightbox-count></span>
+    <button type="button" class="round" aria-label="Volgende" data-lightbox-next>→</button>
+    <button type="button" class="close" data-lightbox-close>Sluit</button>
+  </div>
+</dialog>
+
+<style>
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    padding: clamp(16px, 4vw, 48px);
+    background: transparent;
+    color: var(--paper);
+  }
+
+  .lightbox[open] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .lightbox::backdrop {
+    background: rgba(22, 35, 63, 0.94);
+  }
+
+  .stage {
+    width: min(100%, 1100px);
+    height: min(74vh, 820px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stage img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .round,
+  .close {
+    height: 48px;
+    border: 1px solid rgba(245, 240, 231, 0.5);
+    background: none;
+    color: var(--paper);
+  }
+
+  .round {
+    width: 48px;
+    border-radius: 50%;
+    font-size: 20px;
+  }
+
+  .close {
+    margin-left: 12px;
+    padding: 0 20px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .round:hover,
+  .close:hover {
+    border-color: #fff;
+  }
+
+  .count {
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    min-width: 64px;
+    text-align: center;
+  }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox-dialog]');
+
+  if (dialog) {
+    const image = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const count = dialog.querySelector<HTMLElement>('[data-lightbox-count]')!;
+    let items: HTMLAnchorElement[] = [];
+    let index = 0;
+    let opener: HTMLElement | null = null;
+
+    const render = () => {
+      const link = items[index];
+      image.src = link.href;
+      image.alt = link.querySelector('img')?.alt || `Foto ${index + 1}`;
+      count.textContent = `${index + 1} / ${items.length}`;
+    };
+
+    const step = (d: number) => {
+      index = (index + d + items.length) % items.length;
+      render();
+    };
+
+    document.addEventListener('click', (e) => {
+      const link = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[data-lightbox]');
+      if (!link || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      items = [...document.querySelectorAll<HTMLAnchorElement>(`a[data-lightbox="${link.dataset.lightbox}"]`)];
+      index = items.indexOf(link);
+      opener = link;
+      render();
+      dialog.showModal();
+    });
+
+    dialog.querySelector('[data-lightbox-prev]')!.addEventListener('click', () => step(-1));
+    dialog.querySelector('[data-lightbox-next]')!.addEventListener('click', () => step(1));
+    dialog.querySelector('[data-lightbox-close]')!.addEventListener('click', () => dialog.close());
+
+    // Clicking the dark area around the photo closes the lightbox.
+    dialog.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (t === dialog || t.matches('[data-lightbox-stage]')) dialog.close();
+    });
+
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') step(1);
+      if (e.key === 'ArrowLeft') step(-1);
+    });
+
+    dialog.addEventListener('close', () => {
+      image.removeAttribute('src');
+      opener?.focus();
+    });
+  }
+</script>

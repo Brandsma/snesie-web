@@ -1,0 +1,26 @@
+{
+  "order": 5,
+  "tag": "Workshop",
+  "author": "Snesie&",
+  "read": "1 minuut lezen",
+  "title": "Try-out kookworkshop: Chinese Hakka comfort food",
+  "hero": "kookworkshop.jpg",
+  "ratio": "3/2",
+  "caption": "Melvin Chang en Michelle Huang in de eerste try-out kookworkshop Snesie&",
+  "blocks": [
+    {
+      "t": "lead",
+      "text": "Comfort food uit onze Hakka Chinese Surinaamse cultuur."
+    },
+    {
+      "t": "p",
+      "text": "Om de tradities te behouden, willen we in de toekomst kookworkshops geven, eten dat je terugbrengt naar de tijd van opa en oma."
+    },
+    {
+      "t": "link",
+      "label": "Lees verder",
+      "text": "Het volledige bericht op snesie.nl",
+      "href": "https://www.snesie.nl/post/chinesehakkacomfortfood"
+    }
+  ]
+}

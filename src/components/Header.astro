@@ -1,0 +1,215 @@
+---
+import { Image } from 'astro:assets';
+import { NAV, JOIN, type NavKey } from '@/lib/site';
+import { img } from '@/lib/images';
+
+interface Props {
+  current?: NavKey;
+}
+
+const { current } = Astro.props;
+const logo = img('logo-blauw.png');
+---
+
+<header class="site-header" data-header>
+  <div class="bar container">
+    <a href="/" class="logo" aria-label="Snesie& home">
+      <Image src={logo} alt="Snesie& logo" height={52} densities={[1, 2]} loading="eager" />
+    </a>
+
+    <nav class="nav-wide" aria-label="Hoofdmenu">
+      {
+        NAV.map((l) => (
+          <a href={l.href} class="nav-link" aria-current={current === l.key ? 'page' : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+      <a href={JOIN.href} class="nav-join" aria-current={current === 'join' ? 'page' : undefined}>{JOIN.label}</a>
+    </nav>
+
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+      <span data-menu-label>Menu</span>
+    </button>
+  </div>
+
+  <nav id="mobile-menu" class="nav-mobile" aria-label="Hoofdmenu" hidden data-menu>
+    {
+      NAV.map((l) => (
+        <a href={l.href} class="nav-mobile-link" aria-current={current === l.key ? 'page' : undefined}>
+          {l.label}
+        </a>
+      ))
+    }
+    <a href={JOIN.href} class="nav-mobile-join" aria-current={current === 'join' ? 'page' : undefined}>{JOIN.label}</a>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 60;
+    background: rgba(245, 240, 231, 0);
+    transition:
+      background-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  .site-header[data-scrolled],
+  .site-header[data-open] {
+    background: rgba(245, 240, 231, 0.94);
+    box-shadow: 0 1px 0 var(--header-line);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-block: 12px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+
+  .logo :global(img) {
+    height: 52px;
+    width: auto;
+  }
+
+  .nav-wide {
+    display: none;
+    align-items: center;
+    gap: clamp(18px, 2.4vw, 34px);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .nav-link {
+    color: var(--ink);
+    text-decoration: none;
+    text-underline-offset: 6px;
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-current='page'] {
+    color: var(--blue);
+  }
+
+  .nav-link[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+
+  .nav-join {
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    padding: 11px 20px;
+    border-radius: 999px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+  }
+
+  .nav-join:hover,
+  .nav-join[aria-current='page'] {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .menu-toggle {
+    background: none;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    height: 44px;
+    padding: 0 18px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .nav-mobile {
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    border-top: 1px solid var(--header-line);
+    padding: 12px var(--gutter) 28px;
+    max-height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+  }
+
+  .nav-mobile-link {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--sand-deep);
+  }
+
+  .nav-mobile-link[aria-current='page'] {
+    color: var(--blue);
+  }
+
+  .nav-mobile-join {
+    margin-top: 20px;
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    padding: 16px 22px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .nav-mobile-join[aria-current='page'] {
+    background: var(--blue);
+  }
+
+  @media (min-width: 980px) {
+    .nav-wide {
+      display: flex;
+    }
+
+    .menu-toggle,
+    .nav-mobile {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  import { onScroll } from '@/scripts/scroll';
+
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const toggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+  const label = header.querySelector<HTMLElement>('[data-menu-label]')!;
+  const menu = header.querySelector<HTMLElement>('[data-menu]')!;
+
+  onScroll((y) => header.toggleAttribute('data-scrolled', y > 30));
+
+  const setOpen = (open: boolean) => {
+    menu.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    label.textContent = open ? 'Sluit' : 'Menu';
+    header.toggleAttribute('data-open', open);
+  };
+
+  toggle.addEventListener('click', () => setOpen(menu.hasAttribute('hidden')));
+  menu.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hasAttribute('hidden')) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+  window.matchMedia('(min-width: 980px)').addEventListener('change', (e) => {
+    if (e.matches) setOpen(false);
+  });
+</script>

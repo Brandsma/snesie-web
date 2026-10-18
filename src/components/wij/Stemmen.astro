@@ -1,0 +1,416 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '@/lib/images';
+
+/**
+ * TODO: the oral-history fragment is still a placeholder. Put the recording in
+ * /public/audio/ and set AUDIO_SRC (e.g. '/audio/overgrootoma.mp3'); the
+ * player then drives a real <audio> element. While AUDIO_SRC is empty the
+ * player simulates playback of a 3:24 fragment.
+ */
+const AUDIO_SRC = '';
+const MOCK_DURATION = 204; // seconds (3:24)
+
+const tones = ['Warm, maar niet naïef', 'Trots, maar niet defensief', 'Verdrietig, maar niet hopeloos'];
+const bars = Array.from({ length: 64 }, (_, i) => 0.25 + 0.75 * Math.abs(Math.sin(i * 0.7) * Math.cos(i * 0.23 + 1)));
+
+const excerptShort =
+  'Mijn Hakka-Chinese overgrootmoeder, wie was zij? Voor de wereld onbelangrijk, ‘gewoon een vrouw’, maar achter de schermen een zeer belangrijke steunpilaar in de Chinese familie…';
+const excerptFull =
+  'Mijn Hakka-Chinese overgrootmoeder, wie was zij? Voor de wereld onbelangrijk, ‘gewoon een vrouw’, maar achter de schermen een zeer belangrijke steunpilaar in de Chinese familie: ze runde een winkel, zorgde voor het gezin en wist zich in het begin van de twintigste eeuw staande te houden, terwijl ze zorg droeg voor een groeiende gemeenschap, een tweede en derde generatie Hakka Chinezen geboren in Suriname. Geen contractarbeiders, maar wat was hun verhaal?..';
+---
+
+<section id="stemmen" class="stemmen container">
+  <div class="label" data-reveal>Stemmen · Oral history | verzwegen verhalen</div>
+  <h2 data-reveal>
+    Een plek waar je tranen kunt laten, kunt lachen om je oma's kookfouten en eindelijk durft te vragen: <em
+      >“Mama, waarom praten we er nooit over?”</em
+    >
+  </h2>
+  <ul class="tones" data-reveal data-tones>
+    {
+      tones.map((t, i) => (
+        <li class:list={{ 'is-active': i === 0 }}>
+          <span class="dot" aria-hidden="true" />
+          {t}
+        </li>
+      ))
+    }
+  </ul>
+
+  <article class="card" data-reveal data-player data-src={AUDIO_SRC || undefined} data-duration={MOCK_DURATION}>
+    <Image
+      src={img('hakka-grootmoeder.jpg')}
+      alt="Hakka grootmoeder met haar nakomelingen"
+      widths={[480, 900, 1300]}
+      sizes="(min-width: 1320px) 612px, (min-width: 760px) 50vw, 100vw"
+      class="card-img"
+    />
+    <div class="card-body">
+      <div class="card-top">
+        <span class="num">01</span>
+        <a href="https://www.ourheritage.nl/tentoonstellingen/her-love-her-story-mini-foto-expo" target="_blank" rel="noopener noreferrer"
+          >OurHERitage ↗</a
+        >
+      </div>
+      <h3>Overgrootoma, hoe heette ze, wie was ze...</h3>
+      <p class="excerpt" id="stemmen-excerpt">
+        <span data-excerpt-short>{excerptShort}</span>
+        <span data-excerpt-full hidden>{excerptFull}</span>
+      </p>
+      <button type="button" class="more" aria-expanded="false" aria-controls="stemmen-excerpt" data-excerpt-toggle>Lees verder</button>
+
+      <div class="player">
+        {AUDIO_SRC && <audio src={AUDIO_SRC} preload="none" data-audio />}
+        <button type="button" class="play" aria-label="Afspelen" data-play>
+          <svg class="icon-play" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2 L14 8 L4 14 Z" fill="currentColor"></path></svg>
+          <svg class="icon-pause" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"
+            ><rect x="3" y="2" width="3.5" height="12" fill="currentColor"></rect><rect x="9.5" y="2" width="3.5" height="12" fill="currentColor"
+            ></rect></svg
+          >
+        </button>
+        <div class="track">
+          <div
+            class="wave"
+            role="slider"
+            tabindex="0"
+            aria-label="Voortgang fragment"
+            aria-valuemin="0"
+            aria-valuemax={MOCK_DURATION}
+            aria-valuenow="0"
+            aria-valuetext="0:00"
+            data-wave
+          >
+            {bars.map((h) => <span style={`--h:${(h * 100).toFixed(0)}%`} />)}
+          </div>
+          <div class="times"><span data-time>0:00</span><span>Fragment · 3:24</span></div>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<style>
+  .stemmen {
+    padding-block: var(--section-y);
+    border-top: 1px solid var(--sand-line);
+    scroll-margin-top: 72px;
+  }
+
+  h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(32px, 4.4vw, 64px);
+    line-height: 1.08;
+    letter-spacing: -0.022em;
+    margin-top: 20px;
+    max-width: 20em;
+  }
+
+  h2 em {
+    color: var(--blue);
+  }
+
+  .tones {
+    list-style: none;
+    padding: 0;
+    margin: 36px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+  }
+
+  .tones li {
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.45;
+    transition: opacity 0.6s ease;
+  }
+
+  .tones li.is-active {
+    opacity: 1;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--tree-line);
+    transition: background-color 0.6s;
+  }
+
+  .is-active .dot {
+    background: var(--terracotta);
+  }
+
+  .card {
+    margin-top: clamp(48px, 7vh, 80px);
+    background: #fff;
+    border-radius: 4px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    overflow: hidden;
+  }
+
+  .card :global(.card-img) {
+    width: 100%;
+    height: 100%;
+    min-height: 340px;
+    object-fit: cover;
+  }
+
+  .card-body {
+    padding: clamp(28px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .card-top a {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .num {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--blue);
+  }
+
+  h3 {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 2.8vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+
+  .excerpt {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--body-soft);
+  }
+
+  .more {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .player {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #e7e0d3;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .play {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+  }
+
+  .play:hover {
+    background: var(--blue);
+  }
+
+  .icon-pause,
+  [data-playing] .icon-play {
+    display: none;
+  }
+
+  [data-playing] .icon-pause {
+    display: block;
+  }
+
+  .track {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .wave {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 36px;
+    cursor: pointer;
+  }
+
+  .wave span {
+    flex: 1;
+    border-radius: 2px;
+    height: var(--h);
+    background: var(--sand-line);
+  }
+
+  .wave span.is-played {
+    background: var(--blue);
+  }
+
+  .times {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<script>
+  import { clamp, prefersReducedMotion } from '@/scripts/motion';
+
+  /* Tone labels cycle every 2.8s (not under reduced motion). */
+  document.querySelectorAll<HTMLElement>('[data-tones]').forEach((list) => {
+    if (prefersReducedMotion()) return;
+    const items = [...list.children];
+    let i = 0;
+    setInterval(() => {
+      items[i].classList.remove('is-active');
+      i = (i + 1) % items.length;
+      items[i].classList.add('is-active');
+    }, 2800);
+  });
+
+  /* "Lees verder" */
+  document.querySelectorAll<HTMLButtonElement>('[data-excerpt-toggle]').forEach((btn) => {
+    const card = btn.closest('[data-player]')!;
+    const short = card.querySelector<HTMLElement>('[data-excerpt-short]')!;
+    const full = card.querySelector<HTMLElement>('[data-excerpt-full]')!;
+    btn.addEventListener('click', () => {
+      const open = full.hasAttribute('hidden');
+      full.hidden = !open;
+      short.hidden = open;
+      btn.setAttribute('aria-expanded', String(open));
+      btn.textContent = open ? 'Minder lezen' : 'Lees verder';
+    });
+  });
+
+  /* Audio player: real <audio> when present, otherwise a simulated timer. */
+  interface Source {
+    time: () => number;
+    duration: () => number;
+    playing: () => boolean;
+    play: () => void;
+    pause: () => void;
+    seek: (t: number) => void;
+  }
+
+  function mockSource(duration: number, onTick: () => void): Source {
+    let t = 0;
+    let timer = 0;
+    const stop = () => {
+      clearInterval(timer);
+      timer = 0;
+    };
+    return {
+      time: () => t,
+      duration: () => duration,
+      playing: () => timer !== 0,
+      play() {
+        if (t >= duration) t = 0;
+        timer = window.setInterval(() => {
+          t = Math.min(duration, t + 0.25);
+          if (t >= duration) stop();
+          onTick();
+        }, 250);
+      },
+      pause: stop,
+      seek(v) {
+        t = clamp(v, 0, duration);
+      },
+    };
+  }
+
+  function audioSource(el: HTMLAudioElement, fallback: number, onTick: () => void): Source {
+    ['timeupdate', 'play', 'pause', 'ended', 'loadedmetadata'].forEach((e) => el.addEventListener(e, onTick));
+    const duration = () => (Number.isFinite(el.duration) && el.duration > 0 ? el.duration : fallback);
+    return {
+      time: () => el.currentTime,
+      duration,
+      playing: () => !el.paused && !el.ended,
+      play: () => void el.play().catch(() => {}),
+      pause: () => el.pause(),
+      seek(v) {
+        el.currentTime = clamp(v, 0, duration());
+      },
+    };
+  }
+
+  const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+  document.querySelectorAll<HTMLElement>('[data-player]').forEach((card) => {
+    const playBtn = card.querySelector<HTMLButtonElement>('[data-play]')!;
+    const wave = card.querySelector<HTMLElement>('[data-wave]')!;
+    const bars = [...wave.children];
+    const timeEl = card.querySelector<HTMLElement>('[data-time]')!;
+    const audio = card.querySelector<HTMLAudioElement>('[data-audio]');
+    const fallback = Number(card.dataset.duration) || 204;
+
+    const render = () => {
+      const t = src.time();
+      const d = src.duration();
+      const played = d ? t / d : 0;
+      bars.forEach((b, i) => b.classList.toggle('is-played', i / bars.length < played));
+      timeEl.textContent = fmt(t);
+      wave.setAttribute('aria-valuemax', String(Math.round(d)));
+      wave.setAttribute('aria-valuenow', String(Math.round(t)));
+      wave.setAttribute('aria-valuetext', fmt(t));
+      const playing = src.playing();
+      card.toggleAttribute('data-playing', playing);
+      playBtn.setAttribute('aria-label', playing ? 'Pauzeren' : 'Afspelen');
+    };
+
+    const src: Source = audio ? audioSource(audio, fallback, render) : mockSource(fallback, render);
+
+    playBtn.addEventListener('click', () => {
+      if (src.playing()) src.pause();
+      else src.play();
+      render();
+    });
+
+    wave.addEventListener('click', (e) => {
+      const r = wave.getBoundingClientRect();
+      src.seek(clamp((e.clientX - r.left) / r.width) * src.duration());
+      render();
+    });
+
+    wave.addEventListener('keydown', (e) => {
+      const steps: Record<string, number> = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5, Home: -Infinity, End: Infinity };
+      const d = steps[e.key];
+      if (d === undefined) return;
+      e.preventDefault();
+      const target = Number.isFinite(d) ? src.time() + d : d > 0 ? src.duration() : 0;
+      src.seek(target);
+      render();
+    });
+
+    render();
+  });
+</script>

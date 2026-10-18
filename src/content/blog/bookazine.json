@@ -1,0 +1,37 @@
+{
+  "order": 2,
+  "tag": "Uitgave",
+  "author": "Claudia Moe A Soi",
+  "date": "2026-10-10",
+  "read": "1 minuut lezen",
+  "title": "Uitgave Bookazine OurHERitage",
+  "hero": "bookazine.jpg",
+  "ratio": "3/2",
+  "caption": "Fotografie: Ron van Dullemen",
+  "blocks": [
+    {
+      "t": "lead",
+      "text": "Dinsdag 6 oktober was het zover: na zeker 2 jaar heel hard werken, een interessante reis met verschillende mensen die een bijdrage leverden aan de tentoonstelling Caraibische voor moeders, werd afgelopen dinsdag het bookazine van OurHERitage gepresenteerd."
+    },
+    {
+      "t": "link",
+      "label": "OurHERitage",
+      "text": "Bookazine Our Heritage: de gedeelde kracht",
+      "href": "https://www.ourheritage.nl/product/23591209/bookazine-our-heritage-de-gedeelde-kracht"
+    },
+    {
+      "t": "gallery",
+      "images": [
+        "bookazine.jpg",
+        "bookazine-2.jpg",
+        "bookazine-3.jpg",
+        "bookazine-4.jpg",
+        "bookazine-5.jpg"
+      ]
+    },
+    {
+      "t": "credit",
+      "text": "Fotografie: Ron van Dullemen"
+    }
+  ]
+}

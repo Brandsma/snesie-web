@@ -1,0 +1,470 @@
+---
+import { DEFAULT_SELECTED, TREE, lineage, yearOf, type TreeNode } from '@/data/family-tree';
+import { FILES } from '@/lib/site';
+
+const selected = TREE.flatMap((r) => r.nodes).find((n) => n.id === DEFAULT_SELECTED)!;
+const path = lineage(DEFAULT_SELECTED);
+
+const nodeYear = (n: TreeNode) => (n.id === 'me' ? 'Jij' : n.unknown ? '?' : yearOf(n));
+const nodeLabel = (n: TreeNode, row: number) => (n.id === 'me' ? 'begint hier' : row === 0 ? n.short.replace('Overgroot', '') : n.short);
+const span = (count: number, i: number) => `${i * (8 / count) + 1} / span ${8 / count}`;
+
+/* Data for the client script (selection details). */
+const details = Object.fromEntries(TREE.flatMap((r) => r.nodes).map((n) => [n.id, { gen: n.gen, title: n.title, text: n.text, unknown: n.unknown }]));
+---
+
+<section id="stambomen" class="stambomen">
+  <div class="grid container">
+    <div data-reveal>
+      <div class="label">Stambomen</div>
+      <h2 class="h-section">Ken jij jouw verhaal?</h2>
+      <p class="body-lg">
+        Over gezinnen met Chinese én Creoolse wortels, waarvan de namen van moeders en grootmoeders langzaam uit het
+        familiegeheugen verdwenen.
+      </p>
+
+      <div class="detail" aria-live="polite" data-detail>
+        <div class="label label--small label--muted" data-d-gen>{selected.gen}</div>
+        <div class="d-title" data-d-title>{selected.title}</div>
+        <p data-d-text>{selected.text}</p>
+        <button type="button" class="help" data-help hidden={!selected.unknown}>Help zoeken in je eigen familie</button>
+      </div>
+
+      <div class="links">
+        <a href={FILES.onderzoekstips} target="_blank" rel="noopener">Onderzoekstips roots ↗</a>
+        <a href="https://cbg.nl/onderzoeken-starten/start-jouw-onderzoek/" target="_blank" rel="noopener noreferrer">CBG ↗</a>
+        <a href={FILES.stamboomMelvinChang} target="_blank" rel="noopener">Stamboom Melvin Chang ↗</a>
+        <a href={FILES.stamboomRelyHoogendijk} target="_blank" rel="noopener">Stamboom Rely Hoogendijk ↗</a>
+      </div>
+    </div>
+
+    <div class="tree-col">
+      <div class="tree-note">Voorbeeldstamboom · klik op een persoon</div>
+      <div class="tree" data-tree>
+        <div class="row-grid sides-row">
+          <span class="gutter"></span>
+          <div class="cols sides">
+            <span style="grid-column: 1 / 5">Vaderskant</span>
+            <span style="grid-column: 5 / 9">Moederskant</span>
+          </div>
+        </div>
+
+        {
+          TREE.map((row, ri) => {
+            const next = TREE[ri + 1];
+            return (
+              <div data-reveal data-delay={ri * 140}>
+                <div class="row-grid">
+                  <div class="gutter gen-label">{row.label}</div>
+                  <div class:list={['cols', `r${ri}`]}>
+                    {row.nodes.map((n, i) => (
+                      <div class="cell" style={`grid-column: ${span(row.nodes.length, i)}`}>
+                        <button
+                          type="button"
+                          class:list={['node', { unknown: n.unknown, me: n.id === 'me', 'in-path': path.has(n.id) }]}
+                          aria-pressed={n.id === DEFAULT_SELECTED ? 'true' : 'false'}
+                          aria-label={n.title}
+                          data-node={n.id}
+                        >
+                          <span class="n-year">{nodeYear(n)}</span>
+                          <span class="n-label">{nodeLabel(n, ri)}</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {next && (
+                  <div class="row-grid" aria-hidden="true">
+                    <span class="gutter" />
+                    <div class="cols links-row">
+                      {next.nodes.map((c, j) => {
+                        const lp = row.nodes[j * 2].id;
+                        const rp = row.nodes[j * 2 + 1].id;
+                        return (
+                          <div class="bracket" style={`grid-column: ${span(next.nodes.length, j)}`} data-child={c.id} data-left={lp} data-right={rp}>
+                            <span class:list={['stub-l', { hot: path.has(c.id) && path.has(lp) }]} />
+                            <span class:list={['stub-r', { hot: path.has(c.id) && path.has(rp) }]} />
+                            <span class:list={['bar-l', { hot: path.has(c.id) && path.has(lp) }]} />
+                            <span class:list={['bar-r', { hot: path.has(c.id) && path.has(rp) }]} />
+                            <span class:list={['drop', { hot: path.has(c.id) && (path.has(lp) || path.has(rp)) }]} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+  <script type="application/json" data-tree-details set:html={JSON.stringify(details)} />
+</section>
+
+<style>
+  .stambomen {
+    background: var(--sand);
+  }
+
+  .grid {
+    padding-block: var(--section-y);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+    gap: var(--col-gap);
+    align-items: start;
+  }
+
+  .h-section {
+    margin-top: 20px;
+  }
+
+  .body-lg {
+    margin: 28px 0 0;
+  }
+
+  .detail {
+    margin-top: 36px;
+    background: var(--paper);
+    border-radius: 4px;
+    padding: 28px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .d-title {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  .detail p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--body-soft);
+  }
+
+  .help {
+    align-self: flex-start;
+    margin-top: 6px;
+    background: var(--terracotta);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 0.2s;
+  }
+
+  .help:hover {
+    background: var(--error);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin-top: 28px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* ---------- Tree ---------- */
+  .tree-col {
+    padding-top: 8px;
+  }
+
+  .tree-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .tree {
+    padding: 4px 0 8px;
+    --gut: 76px;
+    --gut-gap: 12px;
+  }
+
+  .row-grid {
+    display: grid;
+    grid-template-columns: var(--gut) minmax(0, 1fr);
+    gap: var(--gut-gap);
+    align-items: center;
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .sides-row {
+    margin-bottom: 18px;
+  }
+
+  .sides {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .sides span {
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--tree-line);
+  }
+
+  .gen-label {
+    font-size: 12px;
+    line-height: 1.25;
+    font-weight: 600;
+    color: var(--muted);
+    overflow: hidden;
+    min-width: 0;
+    hyphens: manual;
+  }
+
+  .cell {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .node {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 4px;
+    border-radius: 3px;
+    border: 1px solid var(--sand-line-strong);
+    background: #fff;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition:
+      box-shadow 0.25s,
+      border-color 0.25s,
+      transform 0.25s;
+    /* Per-row sizes */
+    max-width: var(--max-w-node, 100%);
+    min-height: var(--min-h, 74px);
+  }
+
+  .node:hover {
+    transform: translateY(-2px);
+  }
+
+  .node.in-path {
+    border-color: var(--unknown);
+  }
+
+  .node.unknown {
+    background: transparent;
+    border: 1px dashed var(--unknown);
+  }
+
+  .node.me {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .node[aria-pressed='true'] {
+    border: 1px solid var(--terracotta);
+    box-shadow:
+      0 0 0 1px var(--terracotta),
+      0 6px 16px rgba(22, 35, 63, 0.1);
+  }
+
+  .n-year {
+    font-family: var(--font-serif);
+    font-size: var(--fs, 24px);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .n-label {
+    font-size: var(--lfs, 13px);
+    line-height: 1.2;
+    color: var(--body-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .node.unknown .n-label {
+    color: var(--muted);
+  }
+
+  .node.me .n-label {
+    color: var(--on-ink-soft);
+  }
+
+  .r0 {
+    --min-h: 62px;
+    --fs: 17px;
+    --lfs: 11px;
+  }
+
+  .r1 {
+    --min-h: 70px;
+    --fs: 21px;
+    --lfs: 12px;
+  }
+
+  .r2 {
+    --max-w-node: 170px;
+  }
+
+  .r3 {
+    --max-w-node: 150px;
+  }
+
+  /* Bracket connectors between generations */
+  .bracket {
+    position: relative;
+    height: 34px;
+  }
+
+  .bracket span {
+    position: absolute;
+    background: var(--tree-line);
+    transition: background-color 0.3s;
+    --w: 1px;
+  }
+
+  .bracket span.hot {
+    background: var(--terracotta);
+    --w: 2px;
+  }
+
+  .stub-l,
+  .stub-r {
+    top: 0;
+    height: 50%;
+    width: var(--w);
+    transform: translateX(-50%);
+  }
+
+  .stub-l {
+    left: calc(25% - 1.5px);
+  }
+
+  .stub-r {
+    left: calc(75% + 1.5px);
+  }
+
+  .bar-l,
+  .bar-r {
+    top: 50%;
+    height: var(--w);
+    transform: translateY(-50%);
+  }
+
+  .bar-l {
+    left: calc(25% - 1.5px);
+    right: 50%;
+  }
+
+  .bar-r {
+    left: 50%;
+    right: calc(25% - 1.5px);
+  }
+
+  .drop {
+    left: 50%;
+    top: 50%;
+    bottom: 0;
+    width: var(--w);
+    transform: translateX(-50%);
+  }
+
+  /* Tight mobile: no generation gutter, great-grandparents show only year/"?" */
+  @media (max-width: 639px) {
+    .tree {
+      --gut: 0px;
+      --gut-gap: 0px;
+    }
+
+    .gen-label {
+      display: none;
+    }
+
+    .node {
+      padding: 6px 2px;
+    }
+
+    .r0 {
+      --fs: 13px;
+      --min-h: 44px;
+    }
+
+    .r0 .n-label {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { lineage } from '@/data/family-tree';
+
+  type Detail = { gen: string; title: string; text: string; unknown: boolean };
+
+  const root = document.querySelector<HTMLElement>('[data-tree]');
+  const dataEl = document.querySelector<HTMLScriptElement>('[data-tree-details]');
+
+  if (root && dataEl) {
+    const details = JSON.parse(dataEl.textContent || '{}') as Record<string, Detail>;
+    const nodes = [...root.querySelectorAll<HTMLButtonElement>('[data-node]')];
+    const brackets = [...root.querySelectorAll<HTMLElement>('[data-child]')];
+    const detail = document.querySelector<HTMLElement>('[data-detail]')!;
+    const gen = detail.querySelector<HTMLElement>('[data-d-gen]')!;
+    const title = detail.querySelector<HTMLElement>('[data-d-title]')!;
+    const text = detail.querySelector<HTMLElement>('[data-d-text]')!;
+    const help = detail.querySelector<HTMLButtonElement>('[data-help]')!;
+
+    const select = (id: string) => {
+      const path = lineage(id);
+      nodes.forEach((n) => {
+        n.setAttribute('aria-pressed', String(n.dataset.node === id));
+        n.classList.toggle('in-path', path.has(n.dataset.node!));
+      });
+      brackets.forEach((b) => {
+        const child = path.has(b.dataset.child!);
+        const l = child && path.has(b.dataset.left!);
+        const r = child && path.has(b.dataset.right!);
+        b.querySelector('.stub-l')!.classList.toggle('hot', l);
+        b.querySelector('.bar-l')!.classList.toggle('hot', l);
+        b.querySelector('.stub-r')!.classList.toggle('hot', r);
+        b.querySelector('.bar-r')!.classList.toggle('hot', r);
+        b.querySelector('.drop')!.classList.toggle('hot', l || r);
+      });
+      const d = details[id];
+      gen.textContent = d.gen;
+      title.textContent = d.title;
+      text.textContent = d.text;
+      help.hidden = !d.unknown;
+    };
+
+    root.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-node]');
+      if (btn) select(btn.dataset.node!);
+    });
+
+    // Scroll to the contact form and preselect "Mijn stamboom onderzoeken".
+    help.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('snesie-interest', { detail: 'Mijn stamboom onderzoeken' }));
+      document.getElementById('join')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+</script>

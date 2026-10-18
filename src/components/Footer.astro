@@ -1,0 +1,123 @@
+---
+import { Image } from 'astro:assets';
+import { SITE, SOCIAL } from '@/lib/site';
+import { img } from '@/lib/images';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="cols container">
+    <div>
+      <Image src={img('logo-wit.png')} alt="Snesie& logo wit" height={72} densities={[1, 2]} class="footer-logo" />
+      <p class="tagline">{SITE.tagline}</p>
+    </div>
+    <div class="col">
+      <div class="label label--small col-title">Contact</div>
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    </div>
+    <div class="col">
+      <div class="label label--small col-title">Let's get social</div>
+      {
+        SOCIAL.map((s) => (
+          <a href={s.href} target="_blank" rel="noopener noreferrer">
+            {s.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+  <div class="bottom container">
+    <span>© {year} Snesie&amp;</span>
+    <span class="legal">
+      <a href="/algemene-voorwaarden/">Algemene Voorwaarden</a>
+      <a href="/algemene-voorwaarden/#cookies" data-open-cookies>Cookie-instellingen</a>
+    </span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--ink);
+    color: var(--on-ink-soft);
+  }
+
+  .cols {
+    padding-top: clamp(56px, 8vh, 96px);
+    padding-bottom: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 40px;
+  }
+
+  .footer-logo {
+    height: 72px;
+    width: auto;
+  }
+
+  .tagline {
+    margin: 20px 0 0;
+    font-family: var(--font-serif);
+    font-size: 20px;
+    line-height: 1.35;
+    color: var(--paper);
+    max-width: 14em;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  .col a {
+    color: var(--paper);
+    align-self: flex-start;
+  }
+
+  .col a:hover {
+    color: #fff;
+  }
+
+  .col-title {
+    color: var(--blue-light);
+    margin-bottom: 6px;
+  }
+
+  .bottom {
+    padding-top: 20px;
+    padding-bottom: 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+
+  .legal a {
+    color: var(--on-ink-soft);
+  }
+
+  .legal a:hover {
+    color: #fff;
+  }
+</style>
+
+<script>
+  import { openCookieSettings } from '@/scripts/consent';
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-open-cookies]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      openCookieSettings();
+    }),
+  );
+</script>

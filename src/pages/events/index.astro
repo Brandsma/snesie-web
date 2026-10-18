@@ -1,0 +1,873 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getArchive, getEvents, eventHref, icsHref } from '@/lib/events';
+import { formatLong, nextFirstSunday, parseLocal, MONTHS_SHORT } from '@/lib/dates';
+import { countLabel, daysToGo, defaultOpenYear, groupPastByYear, isUpcoming, pickNext } from '@/lib/event-schedule';
+import { img } from '@/lib/images';
+import { SITE, SOCIAL } from '@/lib/site';
+
+// Everything date-dependent is rendered with the build date here and
+// recomputed with the visitor's date by src/scripts/events-live.ts.
+const now = new Date();
+const events = await getEvents();
+const archive = await getArchive();
+
+const next = pickNext(events, now);
+const CITIES = ['Alle', 'Rotterdam', 'Amsterdam', 'Den Haag', 'Amersfoort'];
+
+const agenda = events.map((e) => {
+  const d = parseLocal(e.start);
+  return {
+    ...e,
+    past: !isUpcoming(e.start, now),
+    day: d.getDate(),
+    month: (e.deadline ? 'deadline ' : '') + MONTHS_SHORT[d.getMonth()],
+    when: formatLong(d, { capital: false }) + (e.time ? `, ${e.time}` : ''),
+    href: eventHref(e),
+    external: /^https?:/.test(eventHref(e)),
+  };
+});
+const agendaEmpty = agenda.every((e) => e.past);
+
+// "Eerdere events": past real events plus the manual archive. All candidates
+// are rendered (grouped by year); the ones still in the future stay hidden.
+const pastCandidates = [
+  ...events
+    .filter((e) => !e.deadline)
+    .map((e) => ({ date: e.start, title: e.type === 'Erfgoed-tori-oso' ? e.listTitle : `${e.listTitle}, ${e.city}` })),
+  ...archive.map((a) => ({ date: a.date, title: a.title })),
+];
+const FAR_FUTURE = new Date(9999, 0, 1); // groups every candidate, past or not
+const years = groupPastByYear(pastCandidates, FAR_FUTURE).map((g) => {
+  const items = g.items.map((i) => ({ ...i, hidden: isUpcoming(i.date, now) }));
+  return { ...g, items, count: items.filter((i) => !i.hidden).length };
+});
+const openYear = defaultOpenYear(
+  years.filter((y) => y.count > 0).map((y) => y.year),
+  now,
+);
+
+const nextSunday = formatLong(nextFirstSunday(now), { year: false, capital: false });
+
+const tourFacts = [
+  ['Aanmelden', 'Per Whatsapp'],
+  ['Programma', 'Rondleiding door het gebouw, storytelling en vragenronde.'],
+  ['Kosten', 'SRD 350,- pp ter plekke in gepaste contanten afrekenen.'],
+  ['Duur', '2 uren op 1 locatie'],
+  ['Inclusief', 'Tour is inclusief water, excl. eten.'],
+  ['Groepen', 'Een eigen groep vormen voor een andere dag en tijd is bespreekbaar.'],
+  ['Organisator', 'Charles Chang'],
+];
+---
+
+<BaseLayout
+  title="Events & workshops"
+  description="Erfgoed-tori-oso's, workshops en tours van Snesie&: ontmoet de Chinees-Surinaamse gemeenschap en deel verhalen."
+  current="events"
+  ogImage="bibliotheek-rotterdam.jpg"
+>
+  <section class="container hero">
+    <div class="label label--small">Events | Workshops</div>
+    <h1>Chinees, Surinaams, Nederlands, <em>zonder een van die drie te verloochenen</em></h1>
+  </section>
+
+  <section class="container next-wrap">
+    {
+      events.map((e) => {
+        const on = e.id === next?.id;
+        const { days, label } = daysToGo(e.start, now);
+        return (
+          <article
+            class="next"
+            data-next-card
+            data-id={e.id}
+            data-start={e.start}
+            data-deadline={e.deadline ? '' : undefined}
+            hidden={!on}
+          >
+            <div class="next-body">
+              <div class="label label--small next-label">Volgende event</div>
+              <div class="next-count">
+                <span class="next-days" data-days>
+                  {days}
+                </span>
+                <span class="next-days-label" data-days-label>
+                  {label}
+                </span>
+              </div>
+              <h2 class="next-title">{e.listTitle}</h2>
+              <div class="next-meta">
+                {formatLong(parseLocal(e.start))} · {e.venue}
+              </div>
+              <div class="next-actions">
+                <a href={eventHref(e)} class="btn btn--light">
+                  Meer info →
+                </a>
+                <a href={icsHref(e)} download class="btn btn--outline-light">
+                  Zet in agenda
+                </a>
+              </div>
+            </div>
+            <div class="next-media">
+              <Image
+                src={img(e.image)}
+                alt={e.venue}
+                widths={[480, 720, 960, 1320]}
+                sizes="(min-width: 1320px) 660px, (min-width: 900px) 50vw, 100vw"
+                loading={on ? 'eager' : 'lazy'}
+                fetchpriority={on ? 'high' : undefined}
+              />
+            </div>
+          </article>
+        );
+      })
+    }
+      <div class="next next--empty" data-next-empty hidden={!!next}>
+      <div class="label next-empty-label">Volgende event</div>
+      <h2 class="next-empty-title">Binnenkort nieuwe events</h2>
+      <p>Nieuwe data volgen snel. Volg ons op Instagram of mail ons om op de hoogte te blijven.</p>
+      <div class="next-empty-actions">
+        <a href={SOCIAL[0].href} target="_blank" rel="noopener noreferrer" class="btn btn--light">Instagram ↗</a>
+        <a href={`mailto:${SITE.email}`} class="btn btn--outline-light">{SITE.email}</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="agenda" class="container agenda">
+    <div class="agenda-head">
+      <h2 class="agenda-title" data-reveal>Aankomende events &amp; workshops</h2>
+      <div class="chips" role="group" aria-label="Filter op stad" data-reveal data-city-filter hidden>
+        {
+          CITIES.map((c) => (
+            <button type="button" class="chip" aria-pressed={c === 'Alle' ? 'true' : 'false'} data-city-chip data-city={c}>
+              {c}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="rows" data-agenda>
+      {
+        agenda.map((e) => (
+          <details class="row" data-row data-start={e.start} data-city={e.city} data-past={e.past ? '' : undefined} hidden={e.past}>
+            <summary class="row-head">
+              <span class="row-date">
+                <span class="row-day">{e.day}</span>
+                <span class="row-month">{e.month}</span>
+              </span>
+              <span class="row-main">
+                <span class="row-type">
+                  {e.type} · {e.city}
+                </span>
+                <span class="row-title">{e.listTitle}</span>
+                <span class="row-venue">{e.venue}</span>
+              </span>
+              <span class="row-plus" aria-hidden="true">
+                +
+              </span>
+            </summary>
+            <div class="row-panel">
+              <Image
+                src={img(e.image)}
+                alt={e.venue}
+                widths={[400, 640, 960]}
+                sizes="(min-width: 980px) 600px, 100vw"
+                class="row-img"
+              />
+              <div class="row-info">
+                <p>{e.summary}</p>
+                <dl class="facts">
+                  <dt>Wanneer</dt>
+                  <dd>{e.when}</dd>
+                  <dt>Waar</dt>
+                  <dd>{e.where}</dd>
+                  <dt>Deelname</dt>
+                  <dd>{e.price}</dd>
+                </dl>
+                <div class="row-actions">
+                  <a
+                    href={e.href}
+                    class="btn btn--primary"
+                    target={e.external ? '_blank' : undefined}
+                    rel={e.external ? 'noopener noreferrer' : undefined}
+                  >
+                    {e.cta}
+                  </a>
+                  <a href={icsHref(e)} download class="btn btn--secondary">
+                    Zet in agenda
+                  </a>
+                </div>
+              </div>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+    <p class="empty" data-agenda-empty hidden={!agendaEmpty}>
+      Geen aankomende events in deze stad. <a href="/#join">Laat ons weten</a> als je iets wilt organiseren.
+    </p>
+  </section>
+
+  <section class="tour">
+    <div class="container tour-grid">
+      <figure data-reveal>
+        <Image
+          src={img('chinese-tour-paramaribo.jpg')}
+          alt="Chinese Tour in Paramaribo SR"
+          widths={[420, 640, 1040]}
+          sizes="(min-width: 980px) 520px, 100vw"
+          class="tour-img"
+        />
+      </figure>
+      <div data-reveal>
+        <div class="label">Elke 1e zondag van de maand in Paramaribo</div>
+        <h2 class="tour-title">Hakka, History en Heritage</h2>
+        <div class="tour-next">
+          <span class="tour-next-label">Volgende tour</span>
+          <span class="tour-next-date" data-next-sunday>{nextSunday}</span>
+        </div>
+        <dl class="facts tour-facts">
+          {
+            tourFacts.map(([k, v]) => (
+              <>
+                <dt>{k}</dt>
+                <dd>{v}</dd>
+              </>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section missed">
+    <h2 class="missed-title" data-reveal>Dit heb je gemist...</h2>
+    <div class="missed-grid">
+      <article class="feature" data-reveal>
+        <div class="feature-imgs">
+          <Image
+            src={img('kalligrafiemeester-wu.jpg')}
+            alt="Kalligrafiemeester Wu"
+            widths={[360, 560, 908]}
+            sizes="(min-width: 980px) 360px, 58vw"
+            class="feature-img feature-img--main"
+          />
+          <Image
+            src={img('kalligrafie.png')}
+            alt="Chinese kalligrafie door de meester"
+            widths={[260, 400, 600]}
+            sizes="(min-width: 980px) 260px, 42vw"
+            class="feature-img"
+          />
+        </div>
+        <div class="label label--small">16 juli 2026 · Den Haag</div>
+        <h3 class="feature-title">Kalligrafie met meester Wu</h3>
+        <p class="feature-text">
+          Ben je nieuwsgierig naar de eeuwenoude kunst van het Chinese penseelschrift? Grijp dan deze unieke kans om gratis
+          kennis te maken met Chinese kalligrafie tijdens een sfeervolle buitenworkshop op het zonnige terras van de
+          dependance van Museum West, pal voor Amare in Den Haag.
+        </p>
+        <a href="/wij/#in-beeld" class="feature-link">Bekijk hier de foto's →</a>
+      </article>
+
+      <div data-reveal data-delay="120">
+        <div class="label label--muted archive-label">Eerdere events</div>
+        <div class="years">
+          {
+            years.map((y) => (
+              <details class="year" data-year={y.year} open={y.year === openYear} hidden={y.count === 0}>
+                <summary class="year-head">
+                  <span class="year-name">
+                    <span class="year-num">{y.year}</span>
+                    <span class="year-count" data-year-count>
+                      {countLabel(y.count)}
+                    </span>
+                  </span>
+                  <span class="year-plus" aria-hidden="true">
+                    +
+                  </span>
+                </summary>
+                {y.items.map((i) => (
+                  <div class="past" data-past-item data-date={i.date} hidden={i.hidden}>
+                    <span class="past-date">{i.label}</span>
+                    <span class="past-title">{i.title}</span>
+                  </div>
+                ))}
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container cta-inner">
+      <h2 data-reveal>Doe mee: ontdek je roots, deel je verhaal en bouw met ons aan een inclusieve, levendige toekomst</h2>
+      <a data-reveal href="/join-us/" class="btn btn--light cta-btn">Join us</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-top: clamp(120px, 17vh, 180px);
+    padding-bottom: clamp(48px, 7vh, 80px);
+  }
+
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(44px, 7vw, 108px);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    margin-top: 20px;
+    max-width: 13em;
+  }
+
+  .hero em {
+    color: var(--blue);
+  }
+
+  /* ---------- Volgende event ---------- */
+
+  .next-wrap {
+    padding-bottom: var(--section-y-sm);
+  }
+
+  .next.next--empty {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: clamp(28px, 4vw, 56px);
+  }
+
+  .next--empty[hidden] {
+    display: none;
+  }
+
+  .next-empty-label {
+    color: var(--blue-light);
+  }
+
+  .next-empty-title {
+    font-family: var(--font-serif);
+    font-size: clamp(32px, 3.6vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .next--empty p {
+    margin: 0;
+    max-width: 34em;
+    color: var(--on-ink-soft);
+  }
+
+  .next-empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .next {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 4px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+  }
+
+  .next-body {
+    padding: clamp(28px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .next-label {
+    color: var(--blue-light);
+  }
+
+  .next-count {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .next-days {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    font-size: clamp(72px, 9vw, 136px);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .next-days-label,
+  .next-meta {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--on-ink-soft);
+  }
+
+  .next-title {
+    font-family: var(--font-serif);
+    font-size: clamp(30px, 3.2vw, 46px);
+    line-height: 1.05;
+  }
+
+  .next-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 12px;
+  }
+
+  .next-actions .btn--outline-light {
+    min-height: 50px;
+  }
+
+  .next-media {
+    position: relative;
+    min-height: 320px;
+  }
+
+  .next-media :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ---------- Agenda ---------- */
+
+  .agenda {
+    padding-bottom: var(--section-y);
+    scroll-margin-top: var(--header-h);
+  }
+
+  .agenda-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .agenda-title {
+    font-family: var(--font-serif);
+    font-size: clamp(34px, 4.4vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.022em;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chips .chip {
+    height: 44px;
+    padding: 0 18px;
+    font-size: 15px;
+  }
+
+  .rows {
+    margin-top: 40px;
+    border-bottom: 1px solid var(--sand-line-strong);
+  }
+
+  .row {
+    border-top: 1px solid var(--sand-line-strong);
+  }
+
+  .row-head {
+    list-style: none;
+    padding: 24px 0;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) 44px;
+    gap: clamp(14px, 2vw, 32px);
+    align-items: center;
+  }
+
+  .row-head::-webkit-details-marker {
+    display: none;
+  }
+
+  .row-date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .row-day {
+    font-family: var(--font-serif);
+    font-size: clamp(34px, 3.4vw, 48px);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .row-month {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .row-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .row-type {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  .row-title {
+    font-family: var(--font-serif);
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.15;
+  }
+
+  .row-venue {
+    font-size: 15px;
+    color: var(--body-soft);
+  }
+
+  .row-plus,
+  .year-plus {
+    border-radius: 50%;
+    border: 1px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition:
+      transform 0.3s,
+      background-color 0.3s,
+      color 0.3s;
+  }
+
+  .row-plus {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .row[open] .row-plus {
+    transform: rotate(45deg);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .row-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(20px, 3vw, 48px);
+    padding-bottom: 32px;
+  }
+
+  .row-panel :global(.row-img) {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .row-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .row-info p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--body-soft);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 20px;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .facts dt {
+    color: var(--muted);
+  }
+
+  .facts dd {
+    margin: 0;
+  }
+
+  .row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .row-actions .btn {
+    padding: 13px 22px;
+  }
+
+  .empty {
+    margin: 32px 0 0;
+    font-size: 17px;
+    color: var(--body-soft);
+  }
+
+  /* ---------- Paramaribo tour ---------- */
+
+  .tour {
+    background: var(--sand);
+  }
+
+  .tour-grid {
+    padding-block: var(--section-y);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+    gap: var(--col-gap);
+    align-items: center;
+  }
+
+  .tour figure {
+    margin: 0;
+  }
+
+  .tour :global(.tour-img) {
+    width: 100%;
+    max-width: 520px;
+    aspect-ratio: 419 / 477;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .tour-title {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 4.4vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.022em;
+    margin-top: 20px;
+  }
+
+  .tour-next {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 16px 0;
+    border-block: 1px solid var(--sand-line-strong);
+  }
+
+  .tour-next-label {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .tour-next-date {
+    font-family: var(--font-serif);
+    font-size: 24px;
+  }
+
+  .tour-facts {
+    gap: 12px 24px;
+    font-size: 16px;
+    margin-top: 24px;
+  }
+
+  /* ---------- Dit heb je gemist ---------- */
+
+  .missed-title {
+    font-family: var(--font-serif);
+    font-size: clamp(38px, 5vw, 76px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+
+  .missed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+    gap: var(--col-gap);
+    margin-top: clamp(40px, 6vh, 64px);
+  }
+
+  .feature {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .feature-imgs {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 10px;
+  }
+
+  .feature :global(.feature-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .feature :global(.feature-img--main) {
+    aspect-ratio: 908 / 584;
+  }
+
+  .feature-title {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 2.8vw, 40px);
+    line-height: 1.1;
+  }
+
+  .feature-text {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--body-soft);
+  }
+
+  .feature-link {
+    font-weight: 600;
+    font-size: 15px;
+    align-self: flex-start;
+  }
+
+  .archive-label {
+    padding-bottom: 16px;
+  }
+
+  .years {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .year-head {
+    list-style: none;
+    border-top: 2px solid var(--ink);
+    padding: 16px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .year-head::-webkit-details-marker {
+    display: none;
+  }
+
+  .year-name {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  .year-num {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    line-height: 1;
+    color: var(--blue);
+  }
+
+  .year-count {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .year-plus {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .year[open] .year-plus {
+    transform: rotate(45deg);
+  }
+
+  .past {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+    align-items: baseline;
+    padding: 20px 0;
+    border-top: 1px solid var(--sand-line);
+  }
+
+  .past-date {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .past-title {
+    font-family: var(--font-serif);
+    font-size: clamp(20px, 1.8vw, 25px);
+    line-height: 1.25;
+  }
+
+  /* ---------- CTA ---------- */
+
+  .cta {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .cta-inner {
+    padding-block: var(--section-y-sm);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+  }
+
+  .cta h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(34px, 4.4vw, 64px);
+    line-height: 1.04;
+    letter-spacing: -0.022em;
+    max-width: 14em;
+  }
+
+  .cta-btn {
+    padding: 17px 28px;
+    font-size: 16px;
+  }
+
+  @media (max-width: 639px) {
+    .row-head {
+      grid-template-columns: 64px minmax(0, 1fr) 44px;
+    }
+  }
+</style>
+
+<script>
+  import { initEventsIndex } from '@/scripts/events-live';
+
+  initEventsIndex();
+</script>

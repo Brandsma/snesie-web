@@ -1,0 +1,190 @@
+{
+  "events": [
+    {
+      "id": "kickoff",
+      "type": "Kick-off",
+      "city": "Rotterdam",
+      "title": "Kickoff voor zichtbaar erfgoed",
+      "listTitle": "Kickoff voor zichtbaar erfgoed",
+      "homeTitle": "Kick-off Snesie&",
+      "sub": "Het bewust worden van de Chinese Surinaamse geschiedenis",
+      "start": "2026-10-17T13:00",
+      "end": "17:30",
+      "time": "13.00–17.30 uur",
+      "venue": "Centrale Bibliotheek Rotterdam",
+      "where": "Zaal 'Gaandeweg' op de 4e etage in de Centrale Bibliotheek Rotterdam, Librijesteeg 4, 3011 HN Rotterdam",
+      "address": "Librijesteeg 4, 3011 HN Rotterdam",
+      "image": "kickoff.jpg",
+      "signup": "https://www.snesie.nl/kick-off",
+      "price": "Deelname is gratis, aanmelden verplicht",
+      "summary": "Zichtbaar erfgoed, gedeeld verleden, ontmoeten, bewust worden, samen bouwen aan het Chinees‑Surinaamse verhaal in Nederland.",
+      "body": [
+        {
+          "t": "lead",
+          "text": "Zichtbaar erfgoed, gedeeld verleden, ontmoeten, bewust worden, samen bouwen aan het Chinees‑Surinaamse verhaal in Nederland."
+        },
+        {
+          "t": "p",
+          "text": "Iedereen heeft een verhaal, maar niet alle verhalen worden gehoord. Tijdens de kick-off van Snesie& duiken we samen in de rijke geschiedenis en de persoonlijke ervaringen van de Chinees-Surinaamse gemeenschap."
+        },
+        {
+          "t": "p",
+          "text": "Of je nu nieuwsgierig bent naar je eigen roots, verhalen van vroeger wilt horen of je ervaringen wilt delen met de nieuwe generatie: dit is hét moment om samen te komen en te bouwen aan een toekomst waarin ons erfgoed blijft leven."
+        }
+      ]
+    },
+    {
+      "id": "oso-rdam",
+      "series": "oso",
+      "type": "Erfgoed-tori-oso",
+      "city": "Rotterdam",
+      "title": "Workshop voor zichtbaar erfgoed Rotterdam",
+      "listTitle": "Erfgoed-tori-oso Rotterdam",
+      "sub": "Het bewust worden van de Chinese Surinaamse geschiedenis",
+      "start": "2026-10-24",
+      "venue": "Bibliotheek Rotterdam",
+      "where": "Bibliotheek Rotterdam",
+      "address": "Centrale Bibliotheek Rotterdam",
+      "image": "bibliotheek-rotterdam.jpg",
+      "signup": "https://www.snesie.nl/cultuur-oso-rotterdam",
+      "price": "Deelname is gratis, aanmelden verplicht",
+      "summary": "Iedereen heeft een verhaal, maar niet alle verhalen worden gehoord. Of je nu nieuwsgierig bent naar je eigen roots, verhalen van vroeger wilt horen of je ervaringen wilt delen met de nieuwe generatie: dit is hét moment om samen te komen en te bouwen aan een toekomst waarin ons erfgoed blijft leven.",
+      "body": [
+        {
+          "t": "lead",
+          "text": "Op 24 oktober organiseert stichting Snesie& een erfgoed-tori-oso bij de Bibliotheek Rotterdam."
+        },
+        {
+          "t": "p",
+          "text": "In een erfgoed-tori-oso worden onbekende verhalen gedeeld en historische bewustzijn en identiteitskracht versterkt."
+        },
+        {
+          "t": "speaker",
+          "name": "Charles Chang",
+          "text": "Deze keer neemt Charles Chang het publiek mee in een bijzondere onbesproken geschiedenis: Kinderen die naar China werden gestuurd om hun roots en cultuur niet te vergeten. Een ingrijpende keuze die alles veranderde, voor het kind én het gezin."
+        },
+        {
+          "t": "p",
+          "text": "We gaan samen in gesprek over deze erfenis/geschiedenis. Hoe voelt het om terug te keren naar een plek die niet meer als thuis voelt en wat zijn de maatschappelijke gevolgen hiervan? En minstens zo belangrijk: Hoe behoudt de gemeenschap nu de Surinaams-Chinese cultuur en dragen men deze over?"
+        },
+        {
+          "t": "p",
+          "text": "De erfgoed-tori-osos zijn een vervolg op de kick-off van stichting Snesie& op 17 oktober. Ook als je niet bij de kick-off aanwezig was, ben je van harte welkom om deel te nemen. Het programma is op alle drie bijeenkomsten gelijk; bij aanmelding kies je één datum."
+        }
+      ]
+    },
+    {
+      "id": "essay",
+      "type": "Open call",
+      "city": "Amsterdam",
+      "title": "Jouw geschiedenis, jouw stem: schrijf mee over contractarbeid en identiteit",
+      "listTitle": "Jouw geschiedenis, jouw stem: schrijf mee over contractarbeid en identiteit",
+      "start": "2026-10-26",
+      "deadline": true,
+      "venue": "Aanmelden vóór 26 oktober 2026",
+      "where": "Amsterdam of omgeving",
+      "image": "essay.jpg",
+      "price": "Aanmelden via info@collectiefcontractarbeid.org",
+      "summary": "Ben jij 18 - 35 jaar, Chinees-Surinaams en woon je in Amsterdam of omgeving? Onderzoek jouw familiegeschiedenis, identiteit en perspectief in een essay onder professionele begeleiding.",
+      "link": "mailto:info@collectiefcontractarbeid.org",
+      "cta": "Aanmelden per e-mail"
+    },
+    {
+      "id": "oso-adam",
+      "series": "oso",
+      "type": "Erfgoed-tori-oso",
+      "city": "Amsterdam",
+      "title": "Workshop voor zichtbaar erfgoed Amsterdam",
+      "listTitle": "Erfgoed-tori-oso Amsterdam",
+      "sub": "Het bewust worden van de Chinese Surinaamse geschiedenis",
+      "start": "2026-10-31T13:00",
+      "end": "17:30",
+      "time": "13.00–17.30 uur",
+      "venue": "Perdu",
+      "where": "Perdu, Kloveniersburgwal 86, 1012 CZ Amsterdam",
+      "address": "Kloveniersburgwal 86, 1012 CZ Amsterdam",
+      "image": "perdu-amsterdam.jpg",
+      "signup": "https://www.snesie.nl/cultuur-oso-amsterdam",
+      "price": "Deelname is gratis, aanmelden verplicht",
+      "summary": "Iedereen heeft een verhaal, maar niet alle verhalen worden gehoord. Of je nu nieuwsgierig bent naar je eigen roots, verhalen van vroeger wilt horen of je ervaringen wilt delen met de nieuwe generatie: dit is hét moment om samen te komen en te bouwen aan een toekomst waarin ons erfgoed blijft leven.",
+      "body": [
+        {
+          "t": "lead",
+          "text": "Op 31 oktober organiseert stichting Snesie& een erfgoed-tori-oso bij Perdu in Amsterdam."
+        },
+        {
+          "t": "p",
+          "text": "In een erfgoed-tori-oso worden onbekende verhalen gedeeld en historische bewustzijn en identiteitskracht versterkt."
+        },
+        {
+          "t": "speaker",
+          "name": "Charles Chang",
+          "text": "Deze keer neemt Charles Chang het publiek mee in een bijzondere onbesproken geschiedenis: Kinderen die naar China werden gestuurd om hun roots en cultuur niet te vergeten. Een ingrijpende keuze die alles veranderde, voor het kind én het gezin."
+        },
+        {
+          "t": "p",
+          "text": "We gaan samen in gesprek over deze erfenis/geschiedenis. Hoe voelt het om terug te keren naar een plek die niet meer als thuis voelt en wat zijn de maatschappelijke gevolgen hiervan? En minstens zo belangrijk: Hoe behoudt de gemeenschap nu de Surinaams-Chinese cultuur en dragen men deze over?"
+        },
+        {
+          "t": "p",
+          "text": "De erfgoed-tori-osos zijn een vervolg op de kick-off van stichting Snesie& op 17 oktober. Ook als je niet bij de kick-off aanwezig was, ben je van harte welkom om deel te nemen. Het programma is op alle drie bijeenkomsten gelijk; bij aanmelding kies je één datum."
+        }
+      ]
+    },
+    {
+      "id": "oso-dh",
+      "series": "oso",
+      "type": "Erfgoed-tori-oso",
+      "city": "Den Haag",
+      "title": "Workshop voor zichtbaar erfgoed Den Haag",
+      "listTitle": "Erfgoed-tori-oso Den Haag",
+      "sub": "Het bewust worden van de Chinese Surinaamse geschiedenis",
+      "start": "2026-11-01",
+      "venue": "PEP",
+      "where": "PEP in Den Haag, Riviervismarkt 2",
+      "address": "Riviervismarkt 2, Den Haag",
+      "image": "pep-den-haag.jpg",
+      "signup": "https://www.snesie.nl/cultuur-oso-denhaag",
+      "price": "Deelname is gratis, aanmelden verplicht",
+      "summary": "Iedereen heeft een verhaal, maar niet alle verhalen worden gehoord. Of je nu nieuwsgierig bent naar je eigen roots, verhalen van vroeger wilt horen of je ervaringen wilt delen met de nieuwe generatie: dit is hét moment om samen te komen en te bouwen aan een toekomst waarin ons erfgoed blijft leven.",
+      "body": [
+        {
+          "t": "lead",
+          "text": "Op 1 november organiseert stichting Snesie& een erfgoed-tori-oso bij PEP in Den Haag."
+        },
+        {
+          "t": "p",
+          "text": "In een erfgoed-tori-oso worden onbekende verhalen gedeeld en historische bewustzijn en identiteitskracht versterkt."
+        },
+        {
+          "t": "speaker",
+          "name": "Charles Chang",
+          "text": "Deze keer neemt Charles Chang het publiek mee in een bijzondere onbesproken geschiedenis: Kinderen die naar China werden gestuurd om hun roots en cultuur niet te vergeten. Een ingrijpende keuze die alles veranderde, voor het kind én het gezin."
+        },
+        {
+          "t": "p",
+          "text": "We gaan samen in gesprek over deze erfenis/geschiedenis. Hoe voelt het om terug te keren naar een plek die niet meer als thuis voelt en wat zijn de maatschappelijke gevolgen hiervan? En minstens zo belangrijk: Hoe behoudt de gemeenschap nu de Surinaams-Chinese cultuur en dragen men deze over?"
+        },
+        {
+          "t": "p",
+          "text": "De erfgoed-tori-osos zijn een vervolg op de kick-off van stichting Snesie& op 17 oktober. Ook als je niet bij de kick-off aanwezig was, ben je van harte welkom om deel te nemen. Het programma is op alle drie bijeenkomsten gelijk; bij aanmelding kies je één datum."
+        }
+      ]
+    },
+    {
+      "id": "symposium",
+      "type": "Symposium",
+      "city": "Amersfoort",
+      "title": "Jaarlijks Symposium Oral History 2026",
+      "listTitle": "Jaarlijks Symposium Oral History 2026",
+      "start": "2026-12-11",
+      "venue": "Amersfoort",
+      "where": "Amersfoort",
+      "image": "symposium.jpg",
+      "price": "Zie de blogpost",
+      "summary": "Jaarlijks Symposium Oral History 2026 in Amersfoort: 11-12-2026",
+      "link": "/blog/symposium/",
+      "cta": "Lees de blogpost →"
+    }
+  ]
+}

@@ -1,0 +1,565 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import VideoEmbed from '@/components/media/VideoEmbed.astro';
+import { img } from '@/lib/images';
+import { getEvents } from '@/lib/events';
+import { countdownLabel, parseLocal } from '@/lib/dates';
+
+const TABS = [
+  { id: 'kijk', label: 'Kijk' },
+  { id: 'blog', label: 'Blog' },
+  { id: 'lees', label: 'Lees' },
+  { id: 'bezoek', label: 'Bezoek' },
+];
+
+const posts = (await getCollection('blog')).sort((a, b) => a.data.order - b.data.order);
+const events = await getEvents();
+
+// A post that announces an event shows a countdown, e.g. "Agenda · over 54 dagen".
+const eventFor = (slug: string) => events.find((e) => e.link === `/blog/${slug}/`);
+const daysLabel = (start: string) => {
+  const label = countdownLabel(parseLocal(start));
+  return label.startsWith('Nog ') ? `over ${label.slice(4)}` : label.toLowerCase();
+};
+
+const READ = [
+  {
+    year: '2023',
+    title: 'Melvin Chang: “Vastleggen van geschiedenis is noodzakelijk om nazaten te laten wortelen.”',
+    href: 'https://www.hindorama.com/melvin-chang-vastlegging-van-geschiedenis-is-noodzakelijk-om-nazaten-te-laten-wortelen-kanta-adhin/',
+    image: 'hindorama-melvin.jpg',
+    alt: 'Hindorama: Melvin Chang',
+  },
+  {
+    year: '2025',
+    title: 'Contractarbeid uit de schaduw',
+    href: 'https://www.hindorama.com/contractarbeid-uit-de-schaduw-hindorama/',
+    image: 'hindorama-contractarbeid.jpg',
+    alt: 'Hindorama: Contractarbeid uit de schaduw',
+  },
+  {
+    year: '2020',
+    title: 'Chinese Surinamers, een succesvolle bevolkingsgroep.',
+    href: 'https://www.hindorama.com/chinese-surinamers-een-succesvolle-bevolkingsgroep-prof-chan-choenni/',
+    image: 'hindorama-chinese-immigratie.jpg',
+    alt: 'Hindorama: Chinese Surinamers',
+  },
+];
+
+const VISIT = [
+  {
+    title: 'Collectief Contractarbeid ↗',
+    href: 'https://collectiefcontractarbeid.org/',
+    image: 'collectief-contractarbeid.png',
+    alt: 'Collectief Contractarbeid website',
+    text: 'Collectief Contractarbeid zet zich in voor erkenning en behoud van de geschiedenis van Chinese, Hindostaanse en Javaanse contractarbeiders in Suriname en Nederland.',
+  },
+  {
+    title: 'Snesie ↗',
+    href: 'https://www.snesie.org/',
+    image: 'snesie-org.png',
+    alt: 'Snesie.org website',
+    text: 'Aanleiding voor Snesie is een onderbelicht deel van de koloniale geschiedenis. Snesie is Sranan Tongo, het Surinaamse woord voor Chinees of Chinezen.',
+  },
+];
+---
+
+<BaseLayout
+  title="Inspiratie: media en blog"
+  description="Kijk, lees en ontdek: video's, blogposts, artikelen en websites over de Chinees-Surinaamse geschiedenis en het Hakka-erfgoed."
+  current="media"
+  ogImage="youtube-poster.jpg"
+>
+  <section class="head container">
+    <h1 class="head-title">Inspiratie</h1>
+    <div class="label label--small">Media · Blog</div>
+  </section>
+
+  <div class="container">
+    <nav class="tabs" aria-label="Op deze pagina">
+      {TABS.map((t) => <a href={`#${t.id}`}>{t.label}</a>)}
+    </nav>
+  </div>
+
+  <section id="kijk" class="kijk container">
+    <div class="kijk-head" data-reveal>
+      <div class="label">Kijk terug · opname ‘de Balie’ (mei 2026)</div>
+      <a href="https://www.youtube.com/watch?v=3SgXTBSvNMQ" target="_blank" rel="noopener noreferrer" class="yt-link"
+        >YouTube ↗</a
+      >
+    </div>
+    <div data-reveal>
+      <VideoEmbed
+        id="3SgXTBSvNMQ"
+        title="Verborgen stilte: Surinaams-Chinese contractarbeid, migratie en identiteit"
+        poster="youtube-poster.jpg"
+      />
+    </div>
+  </section>
+
+  <section id="blog" class="blog">
+    <div class="container blog-inner">
+      <div class="blog-head" data-reveal>
+        <div>
+          <div class="label blog-label">Blog</div>
+          <h2 class="blog-title">Snesie &amp; Blog: Inspiratie en tips</h2>
+        </div>
+        <div class="blog-aside">
+          <p>Volg ons via de Snesie&amp; blog voor updates, het laatste nieuws en doe vooral inspiratie op.</p>
+          <a href="/blog/">Alle blogposts →</a>
+        </div>
+      </div>
+      <div class="cards">
+        {
+          posts.map((p, i) => {
+            const ev = eventFor(p.id);
+            return (
+              <a href={`/blog/${p.id}/`} class="card" data-reveal data-delay={(i % 3) * 90}>
+                <div class="card-img">
+                  <Image
+                    src={img(p.data.hero)}
+                    alt={p.data.caption ?? p.data.title}
+                    widths={[360, 720]}
+                    sizes="(min-width: 1320px) 400px, (min-width: 700px) 45vw, 100vw"
+                  />
+                </div>
+                <span class="label label--small card-tag">
+                  {p.data.tag}{ev && <> · <span data-countdown={ev.start}>{daysLabel(ev.start)}</span></>}
+                </span>
+                <span class="card-title">{p.data.title}</span>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <section id="lees" class="lees">
+    <div class="container lees-inner">
+      <div>
+        <div class="label" data-reveal>Lees terug · Hindorama</div>
+        <div class="reads" data-reads>
+          {
+            READ.map((r, i) => (
+              <a
+                href={r.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="read"
+                data-active={i === 0 ? '' : undefined}
+                data-read={i}
+                data-reveal
+                data-delay={i * 90}
+              >
+                <span class="read-year">{r.year}</span>
+                <span class="read-title">{r.title}</span>
+                <span class="read-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+      <div class="preview" data-reveal data-delay="120">
+        {
+          READ.map((r, i) => (
+            <Image
+              src={img(r.image)}
+              alt={r.alt}
+              widths={[480, 900]}
+              sizes="(min-width: 980px) 600px, 100vw"
+              class:list={['preview-img', { 'is-active': i === 0 }]}
+              data-preview={i}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section id="bezoek" class="bezoek container">
+    <div class="label" data-reveal>Bezoek deze website</div>
+    <div class="visit">
+      {
+        VISIT.map((v, i) => (
+          <a href={v.href} target="_blank" rel="noopener noreferrer" class="visit-card" data-reveal data-delay={i * 120}>
+            <div class="visit-img">
+              <Image src={img(v.image)} alt={v.alt} widths={[400, 800, 1100]} sizes="(min-width: 860px) 50vw, 100vw" />
+            </div>
+            <span class="visit-title">{v.title}</span>
+            <span class="visit-text">{v.text}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="proverb">
+    <figure>
+      <blockquote>
+        Druppels water kunnen een steen doorboren, niet door hun kracht, maar door hun volharding.
+      </blockquote>
+      <figcaption>Chinees spreekwoord</figcaption>
+    </figure>
+  </section>
+</BaseLayout>
+
+<style>
+  .head {
+    padding-top: clamp(108px, 14vh, 140px);
+    padding-bottom: clamp(20px, 3vh, 32px);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .head-title {
+    font-family: var(--font-serif);
+    font-size: clamp(44px, 6vw, 88px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px clamp(20px, 3vw, 40px);
+    padding: 16px 0;
+    border-top: 1px solid var(--sand-line-strong);
+    border-bottom: 1px solid var(--sand-line-strong);
+  }
+
+  .tabs a {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    text-underline-offset: 6px;
+  }
+
+  .tabs a:hover {
+    color: var(--blue);
+    text-decoration: underline;
+  }
+
+  section[id] {
+    scroll-margin-top: 80px;
+  }
+
+  /* Kijk */
+  .kijk {
+    padding-top: clamp(20px, 3vh, 32px);
+    padding-bottom: var(--section-y-sm);
+  }
+
+  .kijk-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .yt-link {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Blog */
+  .blog {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .blog-inner {
+    padding-block: var(--section-y-sm);
+  }
+
+  .blog-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .blog-label {
+    color: var(--blue-light);
+  }
+
+  .blog-title {
+    font-family: var(--font-serif);
+    font-size: clamp(38px, 5vw, 76px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    margin-top: 18px;
+  }
+
+  .blog-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .blog-aside p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--on-ink-soft);
+    max-width: 24em;
+  }
+
+  .blog-aside a {
+    color: var(--blue-light);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .blog-aside a:hover {
+    color: #fff;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(20px, 2.4vw, 36px);
+    margin-top: clamp(40px, 6vh, 64px);
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-decoration: none;
+    color: var(--paper);
+  }
+
+  .card:hover {
+    color: var(--blue-light);
+  }
+
+  .card-img {
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  .card-img :global(img) {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease-out);
+  }
+
+  .card:hover .card-img :global(img) {
+    transform: scale(1.04);
+  }
+
+  .card-tag {
+    color: var(--blue-light);
+  }
+
+  .card-title {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    line-height: 1.15;
+    text-wrap: pretty;
+  }
+
+  /* Lees */
+  .lees {
+    background: var(--sand);
+  }
+
+  .lees-inner {
+    padding-block: var(--section-y-sm);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+
+  .reads {
+    margin-top: 28px;
+    border-bottom: 1px solid var(--sand-line-strong);
+  }
+
+  .read {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding: 26px 0;
+    border-top: 1px solid var(--sand-line-strong);
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .read-year {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .read-title {
+    font-family: var(--font-serif);
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.2;
+    transition: color 0.25s;
+    text-wrap: pretty;
+  }
+
+  .read-arrow {
+    font-size: 18px;
+  }
+
+  .read[data-active] .read-title,
+  .read[data-active] .read-arrow {
+    color: var(--blue);
+  }
+
+  .preview {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--header-line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .preview-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The source photos carry the subject in their lower part. */
+    object-position: 50% 95%;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .preview-img.is-active {
+    opacity: 1;
+  }
+
+  @media (min-width: 760px) {
+    .preview {
+      top: 64px;
+    }
+  }
+
+  /* Bezoek */
+  .bezoek {
+    padding-block: var(--section-y-sm);
+  }
+
+  .visit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: clamp(20px, 3vw, 40px);
+    margin-top: 28px;
+    align-items: start;
+  }
+
+  .visit-card {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .visit-card:hover {
+    color: var(--blue);
+  }
+
+  .visit-img {
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--sand);
+  }
+
+  .visit-img :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease-out);
+  }
+
+  .visit-card:hover .visit-img :global(img) {
+    transform: scale(1.03);
+  }
+
+  .visit-title {
+    font-family: var(--font-serif);
+    font-size: clamp(26px, 2.6vw, 36px);
+    line-height: 1.1;
+  }
+
+  .visit-text {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--body-soft);
+    max-width: 34em;
+    text-wrap: pretty;
+  }
+
+  /* Proverb */
+  .proverb {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--section-y-sm) var(--gutter);
+    text-align: center;
+  }
+
+  .proverb figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .proverb blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(28px, 3.2vw, 44px);
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+
+  .proverb figcaption {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+</style>
+
+<script>
+  import { countdownLabel, parseLocal } from '@/lib/dates';
+
+  // Lees: hovering or focusing an article swaps the preview image.
+  const reads = [...document.querySelectorAll<HTMLAnchorElement>('[data-read]')];
+  const previews = [...document.querySelectorAll<HTMLElement>('[data-preview]')];
+  const select = (i: string) => {
+    reads.forEach((r) => r.toggleAttribute('data-active', r.dataset.read === i));
+    previews.forEach((p) => p.classList.toggle('is-active', p.dataset.preview === i));
+  };
+  reads.forEach((r) => {
+    r.addEventListener('mouseenter', () => select(r.dataset.read!));
+    r.addEventListener('focus', () => select(r.dataset.read!));
+  });
+
+  // Countdowns are rendered at build time; refresh them for the visitor's today.
+  document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((el) => {
+    const label = countdownLabel(parseLocal(el.dataset.countdown!));
+    el.textContent = label.startsWith('Nog ') ? `over ${label.slice(4)}` : label.toLowerCase();
+  });
+</script>

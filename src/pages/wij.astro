@@ -1,0 +1,475 @@
+---
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Lightbox from '@/components/Lightbox.astro';
+import MissieVisie from '@/components/wij/MissieVisie.astro';
+import Stemmen from '@/components/wij/Stemmen.astro';
+import { img } from '@/lib/images';
+import { SITE, JOIN } from '@/lib/site';
+
+/** "In beeld" gallery: file name + focal point. Photos 1 and 7 are large on desktop. */
+const PHOTOS: [string, string][] = [
+  ['in-beeld-01.jpg', '46% 49%'],
+  ['in-beeld-02.jpg', '50% 50%'],
+  ['in-beeld-03.jpg', '49% 34%'],
+  ['in-beeld-04.jpg', '50% 50%'],
+  ['in-beeld-05.jpg', '50% 50%'],
+  ['in-beeld-06.jpg', '54% 44%'],
+  ['in-beeld-07.jpg', '55% 32%'],
+  ['in-beeld-08.jpg', '50% 50%'],
+  ['in-beeld-09.jpg', '49% 32%'],
+  ['in-beeld-10.jpg', '50% 50%'],
+];
+const LARGE = new Set([0, 6]);
+
+const photos = await Promise.all(
+  PHOTOS.map(async ([name, pos], i) => ({
+    src: img(name),
+    full: (await getImage({ src: img(name), width: 1800, format: 'webp' })).src,
+    pos,
+    large: LARGE.has(i),
+    delay: (i % 5) * 70,
+  })),
+);
+
+const pastEvents = [
+  { date: '24-01-2026', title: 'Werkconferentie' },
+  { date: '16-05-2026', title: 'De Balie' },
+  { date: '20-06-2026', title: 'Werkconferentie' },
+  { date: '16-07-2026', title: 'Chinese kalligrafie' },
+];
+---
+
+<BaseLayout
+  title="Wij · De Surinaamse afdruk"
+  description="Snesie& verzamelt, onderzoekt en deelt de verhalen van de Chinees-Surinaamse gemeenschap: missie, visie, oral history en onze projecten in beeld."
+  current="wij"
+  ogImage="snesie-het-verhaal.jpg"
+>
+  <section class="hero container">
+    <nav class="hero-nav" aria-label="Op deze pagina">
+      <span>Wij · Het verhaal</span>
+      <a href="#missie">Missie | Visie</a>
+      <a href="#stemmen">Stemmen</a>
+      <a href="#in-beeld">In beeld</a>
+    </nav>
+    <h1>“De Surinaamse <em>afdruk</em>”</h1>
+    <p class="hero-sub">Snesie&amp; | Chinese zielen, Surinaamse wortels, Nederlandse stemmen</p>
+  </section>
+
+  <section class="hero-photo container" data-hero-photo>
+    <div class="hero-frame">
+      <Image
+        src={img('snesie-het-verhaal.jpg')}
+        alt="Snesie& het verhaal"
+        widths={[640, 960, 1283]}
+        sizes="(min-width: 1320px) 1224px, calc(100vw - 2 * clamp(20px, 4vw, 48px))"
+        loading="eager"
+        fetchpriority="high"
+        data-hero-img
+      />
+    </div>
+    <Image src={img('chan-hua-flower.png')} alt="" widths={[260, 520]} sizes="(min-width: 1440px) 260px, 18vw" class="hero-flower" data-hero-flower />
+  </section>
+
+  <section class="story container">
+    <div class="two-col">
+      <p class="story-lead" data-reveal>
+        Sommige verhalen verdwijnen langzaam. Niet omdat ze onbelangrijk zijn, maar omdat ze nooit zijn verteld.
+      </p>
+      <div class="story-body" data-reveal data-delay="120">
+        <p>
+          Snesie&amp; verzamelt, onderzoekt en deelt de verhalen van de Chinees-Surinaamse gemeenschap. Zo bewaren we ons erfgoed,
+          doorbreken wij de stilte tussen generaties en bouwen wij samen aan een toekomst waarin deze geschiedenis zichtbaar en levend
+          blijft.
+        </p>
+        <div class="etym">
+          <div class="etym-head">
+            <span class="etym-word">snesie</span>
+            <span class="etym-lang">Sranan Tongo</span>
+          </div>
+          <p>
+            Aanleiding voor Snesie is een onderbelicht deel van de koloniale geschiedenis. Snesie is Sranan Tongo, het Surinaamse woord
+            voor Chinees of Chinezen.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote">
+    <figure class="quote-inner">
+      <blockquote data-reveal>
+        "Ken je familiehistorie, want dat zal je kracht geven. Dan zal je vandaag begrijpen en de toekomst overwinnen."
+      </blockquote>
+      <figcaption class="label" data-reveal>Paul Woei</figcaption>
+    </figure>
+  </section>
+
+  <MissieVisie />
+
+  <Stemmen />
+
+  <section id="in-beeld" class="in-beeld">
+    <div class="container in-beeld-inner">
+      <div class="in-beeld-head">
+        <div data-reveal>
+          <div class="label">In beeld</div>
+          <h2 class="h-section h-section--xl">Dit zijn wij</h2>
+          <p class="in-beeld-intro">Kijk hier onze voorgaande projecten en events terug:</p>
+        </div>
+        <ul class="past" data-reveal data-delay="120">
+          {
+            pastEvents.map((e) => (
+              <li>
+                <div class="past-date">{e.date}</div>
+                <div class="past-title">{e.title}</div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="gallery">
+        {
+          photos.map((p, i) => (
+            <a
+              href={p.full}
+              class:list={['photo', { 'photo--large': p.large }]}
+              data-lightbox="in-beeld"
+              data-reveal
+              data-delay={p.delay}
+              aria-label={`Foto ${i + 1} vergroten`}
+            >
+              <Image
+                src={p.src}
+                alt={`Snesie& in beeld, foto ${i + 1}`}
+                widths={p.large ? [440, 700, 1000] : [240, 440, 700]}
+                sizes={
+                  p.large
+                    ? '(min-width: 980px) 40vw, (min-width: 640px) 50vw, 100vw'
+                    : '(min-width: 980px) 20vw, (min-width: 640px) 33vw, 50vw'
+                }
+                style={`--pos:${p.pos}`}
+              />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container cta-inner">
+      <h2 data-reveal>Weet je waar je vandaan komt, dan weet je waar je heen gaat.</h2>
+      <div class="cta-buttons" data-reveal>
+        <a href={JOIN.href} class="btn btn--light cta-btn">Join us</a>
+        <a href={`mailto:${SITE.email}`} class="btn cta-btn cta-mail">{SITE.email}</a>
+      </div>
+    </div>
+  </section>
+
+  <Lightbox />
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-top: clamp(120px, 17vh, 180px);
+    padding-bottom: clamp(56px, 8vh, 96px);
+  }
+
+  .hero-nav {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  .hero-nav a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .hero-nav a:hover {
+    color: var(--blue);
+  }
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(52px, 9vw, 140px);
+    line-height: 0.94;
+    letter-spacing: -0.035em;
+    margin-top: 24px;
+  }
+
+  h1 em {
+    color: var(--blue);
+  }
+
+  .hero-sub {
+    margin: 28px 0 0;
+    font-size: clamp(17px, 1.35vw, 20px);
+    font-weight: 600;
+  }
+
+  .hero-photo {
+    position: relative;
+  }
+
+  .hero-frame {
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  .hero-frame :global(img) {
+    width: 100%;
+    aspect-ratio: 980 / 626;
+    object-fit: cover;
+    transition: transform 0.2s linear;
+  }
+
+  .hero-photo :global(.hero-flower) {
+    position: absolute;
+    right: clamp(0px, 2vw, 40px);
+    bottom: clamp(-120px, -8vw, -40px);
+    width: clamp(120px, 18vw, 260px);
+    height: auto;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .story {
+    padding-block: clamp(96px, 15vh, 180px);
+  }
+
+  .story-lead {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(30px, 3.6vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .story-body {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .story-body > p {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--body-soft);
+  }
+
+  .etym {
+    padding-top: 20px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .etym-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .etym-word {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .etym-lang {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .etym p {
+    margin: 10px 0 0;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--body-soft);
+  }
+
+  .quote {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .quote-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(96px, 15vh, 180px) var(--gutter);
+  }
+
+  blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(32px, 4.6vw, 66px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .quote figcaption {
+    margin-top: 32px;
+    color: var(--blue-light);
+  }
+
+  .in-beeld {
+    background: var(--sand);
+  }
+
+  .in-beeld-inner {
+    padding-block: var(--section-y);
+  }
+
+  .in-beeld-head {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(32px, 5vw, 80px);
+    align-items: end;
+  }
+
+  .in-beeld-head h2 {
+    margin-top: 20px;
+  }
+
+  .in-beeld-intro {
+    margin: 24px 0 0;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--body-soft);
+  }
+
+  .past {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* 160px (design: 140px) so "Werkconferentie" never runs into its neighbour. */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    border-top: 1px solid var(--ink);
+  }
+
+  .past li {
+    padding: 16px 16px 0 0;
+  }
+
+  .past-date {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .past-title {
+    font-family: var(--font-serif);
+    font-size: 21px;
+    margin-top: 6px;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(46%, 220px), 1fr));
+    grid-auto-flow: dense;
+    gap: clamp(8px, 1vw, 14px);
+    margin-top: clamp(40px, 6vh, 64px);
+  }
+
+  .photo {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--header-line);
+    cursor: zoom-in;
+  }
+
+  @media (min-width: 980px) {
+    .photo--large {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+  }
+
+  .photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--pos, 50% 50%);
+    transition: transform 0.8s var(--ease-out);
+  }
+
+  .photo:hover :global(img),
+  .photo:focus-visible :global(img) {
+    transform: scale(1.05);
+  }
+
+  .cta {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .cta-inner {
+    padding-block: var(--section-y-sm);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+  }
+
+  .cta h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(34px, 4.4vw, 64px);
+    line-height: 1.04;
+    letter-spacing: -0.022em;
+    max-width: 14em;
+  }
+
+  .cta-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .cta-btn {
+    font-size: 16px;
+    padding: 16px 28px;
+  }
+
+  .cta-mail {
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #fff;
+  }
+
+  .cta-mail:hover {
+    border-color: #fff;
+    color: #fff;
+  }
+</style>
+
+<script>
+  import { onScroll } from '@/scripts/scroll';
+  import { clamp, prefersReducedMotion } from '@/scripts/motion';
+
+  const photo = document.querySelector<HTMLElement>('[data-hero-img]');
+  const flower = document.querySelector<HTMLElement>('[data-hero-flower]');
+
+  if (photo && flower && !prefersReducedMotion()) {
+    onScroll((y) => {
+      if (y > window.innerHeight * 2) return;
+      photo.style.transform = `scale(${(1.08 - clamp(y / 900) * 0.08).toFixed(4)})`;
+      flower.style.transform = `translateY(${(y * -0.12).toFixed(1)}px) rotate(${(y * 0.04).toFixed(2)}deg)`;
+    });
+  }
+</script>

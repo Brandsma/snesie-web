@@ -1,0 +1,305 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { LEGAL_DOCS } from '@/components/legal/docs';
+import { SITE } from '@/lib/site';
+---
+
+<BaseLayout
+  title="Algemene Voorwaarden"
+  description="Algemene voorwaarden, privacyverklaring en cookiebeleid van Stichting Snesie&."
+>
+  <section class="intro container">
+    <div class="label label--small">Algemene Voorwaarden 2026</div>
+    <h1>Algemene Voorwaarden</h1>
+    <p>
+      Stichting Snesie&amp;: het uitvoeren van oral history-projecten, het organiseren van publieksactiviteiten en het
+      beheren van een website met erfgoedmateriaal.
+    </p>
+  </section>
+
+  <section class="doc container">
+    <nav class="toc" aria-label="Inhoud" data-toc>
+      {
+        LEGAL_DOCS.map((d) => (
+          <a href={`#${d.id}`} data-toc-link={d.id}>
+            <span class="toc-n">{d.n}</span>
+            <span class="toc-label">{d.toc}</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="docs">
+      {
+        LEGAL_DOCS.map((d) => (
+          <article id={d.id} data-doc>
+            <div class="doc-head">
+              <span class="doc-n">{d.n}</span>
+              <h2>{d.title}</h2>
+            </div>
+            {d.parts.map((p) => (
+              <div class="part">
+                <h3>{p.h}</h3>
+                {p.text && <p>{p.text}</p>}
+                {p.items && (
+                  <ol>
+                    {p.items.map((t, i) => (
+                      <li>
+                        <span class="li-n">{p.bullet ? '–' : `${i + 1}.`}</span>
+                        <span class="li-t">{t}</span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+                {p.after && <p>{p.after}</p>}
+              </div>
+            ))}
+          </article>
+        ))
+      }
+      <div class="questions">
+        <span>Vragen over deze voorwaarden?</span>
+        <a href={`mailto:${SITE.email}`} class="btn btn--primary">{SITE.email}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro {
+    padding-top: clamp(120px, 17vh, 180px);
+    padding-bottom: clamp(40px, 6vh, 64px);
+  }
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(44px, 7vw, 108px);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    margin-top: 20px;
+  }
+
+  .intro p {
+    margin: 28px 0 0;
+    font-size: clamp(17px, 1.35vw, 20px);
+    line-height: 1.55;
+    color: var(--body-soft);
+    max-width: 36em;
+  }
+
+  .doc {
+    padding-bottom: var(--section-y);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+
+  /* Mobile: sticky horizontal pill row under the header. */
+  .toc {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 30;
+    background: var(--paper);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--sand-line);
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .toc a {
+    flex: none;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 999px;
+    color: var(--ink);
+    transition:
+      background-color 0.25s,
+      color 0.25s;
+  }
+
+  .toc-n {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--blue);
+  }
+
+  .toc-label {
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .toc a[aria-current='true'] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .toc a[aria-current='true'] .toc-n {
+    color: var(--blue-light);
+  }
+
+  .docs {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(64px, 10vh, 112px);
+    min-width: 0;
+    max-width: 780px;
+  }
+
+  article {
+    scroll-margin-top: 140px;
+  }
+
+  .doc-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .doc-n {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 28px;
+    color: var(--blue);
+  }
+
+  h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(30px, 3.4vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .part {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--sand-line);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    text-wrap: pretty;
+  }
+
+  .part p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--body-soft-2);
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 8px;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--body-soft-2);
+  }
+
+  .li-n {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: var(--blue);
+    line-height: 1.5;
+  }
+
+  .li-t {
+    text-wrap: pretty;
+  }
+
+  .questions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 28px;
+    background: var(--sand);
+    border-radius: 4px;
+    font-size: 17px;
+  }
+
+  .questions .btn {
+    padding: 14px 22px;
+  }
+
+  /* Desktop: sticky vertical contents list on the left. */
+  @media (min-width: 980px) {
+    .doc {
+      grid-template-columns: 260px minmax(0, 1fr);
+    }
+
+    .toc {
+      top: 120px;
+      padding: 0;
+      border-bottom: none;
+      flex-direction: column;
+      gap: 4px;
+      overflow: visible;
+    }
+
+    .toc a {
+      padding: 14px 16px;
+      border-radius: 0;
+      border-left: 2px solid var(--sand-line);
+    }
+
+    .toc a[aria-current='true'] {
+      background: var(--sand);
+      color: var(--ink);
+      border-left-color: var(--ink);
+    }
+
+    .toc a[aria-current='true'] .toc-n {
+      color: var(--blue);
+    }
+  }
+</style>
+
+<script>
+  import { onScroll } from '@/scripts/scroll';
+
+  // Scroll-spy: the last document whose top has passed 40% of the viewport is active.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+  const docs = [...document.querySelectorAll<HTMLElement>('[data-doc]')];
+  let active = '';
+
+  onScroll(() => {
+    const line = window.innerHeight * 0.4;
+    let current = docs[0]?.id ?? '';
+    for (const d of docs) if (d.getBoundingClientRect().top < line) current = d.id;
+    if (current === active) return;
+    active = current;
+    for (const l of links) {
+      const on = l.dataset.tocLink === current;
+      if (on) l.setAttribute('aria-current', 'true');
+      else l.removeAttribute('aria-current');
+      // Keep the active pill visible in the horizontal mobile row.
+      if (on && l.parentElement && l.parentElement.scrollWidth > l.parentElement.clientWidth) {
+        l.parentElement.scrollTo({ left: l.offsetLeft - 8, behavior: 'smooth' });
+      }
+    }
+  });
+</script>

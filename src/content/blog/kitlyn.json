@@ -1,0 +1,27 @@
+{
+  "order": 4,
+  "tag": "Lezen",
+  "author": "Snesie&",
+  "date": "2026-09-29",
+  "read": "1 minuut lezen",
+  "title": "'Juist voor kinderen met een migratieachtergrond is het belangrijk dat er verhalen zijn om op terug te vallen'",
+  "hero": "kitlyn-verhalen.avif",
+  "ratio": "3/2",
+  "caption": "Transcultureel systeemtherapeut Kitlyn Tjin A Djie over de documentaire 'Het bloed van mijn vader'.",
+  "blocks": [
+    {
+      "t": "lead",
+      "text": "Transcultureel systeemtherapeut Kitlyn Tjin A Djie over de documentaire 'Het bloed van mijn vader'."
+    },
+    {
+      "t": "p",
+      "text": "Welke invloed heeft het verzwijgen van een pijnlijke familiegeschiedenis op jongeren? In de documentaire ‘Het bloed van mijn vader' (BNNVARA) probeert Kimberley te achterhalen wie haar vader was, elf jaar na zijn gewelddadige dood. NPO Doc sprak met transcultureel systeemtherapeut Kitlyn Tjin A Djie over de documentaire."
+    },
+    {
+      "t": "link",
+      "label": "NPO Doc",
+      "text": "Interview met Kitlyn Tjin A Djie",
+      "href": "https://www.npodoc.nl/artikelen/interview-kitlyn-tjin-a-djie"
+    }
+  ]
+}

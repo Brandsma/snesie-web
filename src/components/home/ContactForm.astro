@@ -1,0 +1,357 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '@/lib/images';
+import { SITE } from '@/lib/site';
+
+/**
+ * "Deel je verhaal" form. Posts to PUBLIC_FORM_ENDPOINT (e.g. Formspree) with
+ * fetch; without an endpoint it falls back to opening the visitor's mail app.
+ * Without JavaScript the form posts natively to the endpoint.
+ */
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT || '';
+const interests = ['Mijn verhaal delen', 'Mijn stamboom onderzoeken', 'Een event bezoeken', 'Iets vragen'];
+---
+
+<div class="card" data-contact data-endpoint={endpoint} data-email={SITE.email}>
+  <form action={endpoint || `mailto:${SITE.email}`} method="post" novalidate data-form>
+    <fieldset class="interests">
+      <legend>Ik wil…</legend>
+      <div class="chips">
+        {
+          interests.map((label, i) => (
+            <label class="chip-check">
+              <input type="checkbox" name="interesse" value={label} checked={i === 0} />
+              <span>{label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <label class="field">
+      Naam
+      <input name="naam" autocomplete="name" placeholder="Je naam" required aria-describedby="err-naam" data-field="naam" />
+      <span id="err-naam" class="error" role="alert" data-error="naam"></span>
+    </label>
+
+    <label class="field">
+      E-mail
+      <input
+        name="email"
+        type="email"
+        autocomplete="email"
+        placeholder="naam@voorbeeld.nl"
+        required
+        aria-describedby="err-email"
+        data-field="email"
+      />
+      <span id="err-email" class="error" role="alert" data-error="email"></span>
+    </label>
+
+    <label class="field">
+      <span>Je verhaal of vraag <span class="optional">Optioneel</span></span>
+      <textarea
+        name="bericht"
+        rows="4"
+        placeholder="Bijvoorbeeld: mijn overgrootvader kwam uit Guangdong, maar we weten zijn naam niet meer…"
+        data-field="bericht"></textarea>
+    </label>
+
+    <!-- Spam trap: real visitors never see or fill this. -->
+    <label class="trap" aria-hidden="true">
+      Laat dit veld leeg <input name="_gotcha" tabindex="-1" autocomplete="off" />
+    </label>
+
+    <span class="error" role="alert" data-error="form"></span>
+    <button type="submit" class="submit" data-submit>Verstuur</button>
+  </form>
+
+  <div class="sent" hidden data-sent tabindex="-1">
+    <Image src={img('chan-hua-flower.png')} alt="" width={64} densities={[1, 2]} loading="lazy" />
+    <div class="thanks" data-thanks>Dankjewel.</div>
+    <p data-confirm>We nemen contact met je op.</p>
+    <button type="button" class="reset" data-reset>Nog een bericht sturen</button>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: clamp(24px, 3.5vw, 44px);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .interests {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  legend {
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Checkbox styled as the design's toggle chip. */
+  .chip-check {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .chip-check input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .chip-check span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  .chip-check input:checked + span {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .chip-check input:focus-visible + span {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .optional {
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+
+  input:not([type='checkbox']),
+  textarea {
+    border-radius: 4px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-weight: 400;
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid var(--sand-line-strong);
+    outline: none;
+  }
+
+  input:not([type='checkbox']) {
+    height: 52px;
+  }
+
+  textarea {
+    padding: 14px 16px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+  }
+
+  [aria-invalid='true'] {
+    border: 1.5px solid var(--error) !important;
+  }
+
+  .error {
+    color: var(--error);
+    font-weight: 500;
+  }
+
+  .error:empty {
+    display: none;
+  }
+
+  .trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .submit {
+    height: 56px;
+    border: none;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+  }
+
+  .submit:hover {
+    background: var(--blue-dark);
+  }
+
+  .submit:disabled {
+    opacity: 0.7;
+    cursor: progress;
+  }
+
+  .sent {
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    outline: none;
+  }
+
+  .sent :global(img) {
+    width: 64px;
+    height: auto;
+  }
+
+  .thanks {
+    font-family: var(--font-serif);
+    font-size: clamp(32px, 3.4vw, 48px);
+    line-height: 1.05;
+  }
+
+  .sent p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--body-soft);
+  }
+
+  .reset {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-contact]');
+
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('[data-form]')!;
+    const sent = root.querySelector<HTMLElement>('[data-sent]')!;
+    const submit = root.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const endpoint = root.dataset.endpoint || '';
+    const email = root.dataset.email!;
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const field = (name: string) => form.querySelector<HTMLInputElement>(`[data-field="${name}"]`)!;
+    const setError = (name: string, msg: string) => {
+      root.querySelector<HTMLElement>(`[data-error="${name}"]`)!.textContent = msg;
+      if (name !== 'form') field(name).setAttribute('aria-invalid', msg ? 'true' : 'false');
+    };
+
+    ['naam', 'email'].forEach((name) => field(name).addEventListener('input', () => setError(name, '')));
+
+    // "Help zoeken in je eigen familie" in the family tree preselects an interest.
+    window.addEventListener('snesie-interest', (e) => {
+      const value = (e as CustomEvent<string>).detail;
+      const box = form.querySelector<HTMLInputElement>(`input[name="interesse"][value="${CSS.escape(value)}"]`);
+      if (box) box.checked = true;
+    });
+
+    const showSent = (naam: string, message: string) => {
+      root.querySelector('[data-thanks]')!.textContent = `Dankjewel, ${naam}.`;
+      root.querySelector('[data-confirm]')!.textContent = message;
+      form.hidden = true;
+      sent.hidden = false;
+      sent.focus();
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setError('form', '');
+      const naam = field('naam').value.trim();
+      const mail = field('email').value.trim();
+      const errors = { naam: !naam, email: !EMAIL_RE.test(mail) };
+      setError('naam', errors.naam ? 'Vul je naam in.' : '');
+      setError('email', errors.email ? 'Vul een geldig e-mailadres in.' : '');
+      if (errors.naam || errors.email) {
+        field(errors.naam ? 'naam' : 'email').focus();
+        return;
+      }
+
+      const data = new FormData(form);
+      const interesses = data.getAll('interesse').join(', ');
+      const bericht = String(data.get('bericht') || '');
+
+      if (!endpoint) {
+        // No form service configured: hand over to the visitor's mail app.
+        const body = `Naam: ${naam}\nE-mail: ${mail}\nIk wil: ${interesses}\n\n${bericht}`;
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent('Deel je verhaal')}&body=${encodeURIComponent(body)}`;
+        showSent(naam, 'Je mailprogramma is geopend. Verstuur de e-mail om je bericht met ons te delen.');
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = 'Versturen…';
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: data,
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        showSent(naam, `We nemen contact met je op via ${mail}.`);
+      } catch {
+        setError('form', `Versturen is niet gelukt. Probeer het later opnieuw of mail ons via ${email}.`);
+      } finally {
+        submit.disabled = false;
+        submit.textContent = 'Verstuur';
+      }
+    });
+
+    root.querySelector('[data-reset]')!.addEventListener('click', () => {
+      form.reset();
+      sent.hidden = true;
+      form.hidden = false;
+      field('naam').focus();
+    });
+  }
+</script>

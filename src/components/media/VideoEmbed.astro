@@ -1,0 +1,190 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '@/lib/images';
+
+/**
+ * YouTube video behind a self-hosted poster. The youtube-nocookie iframe only
+ * loads after the visitor clicks AND has accepted third-party cookies; without
+ * consent an inline notice offers to accept or to watch on YouTube instead.
+ */
+interface Props {
+  id: string;
+  title: string;
+  /** Image file name in src/assets/img. */
+  poster: string;
+}
+
+const { id, title, poster } = Astro.props;
+const watchUrl = `https://www.youtube.com/watch?v=${id}`;
+const embedUrl = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+---
+
+<div class="video" data-video data-embed={embedUrl} data-title={title}>
+  <button type="button" class="poster" aria-label={`Video afspelen: ${title}`} data-video-play>
+    <Image src={img(poster)} alt="" widths={[640, 1280]} sizes="(min-width: 1320px) 1224px, 100vw" />
+    <span class="overlay">
+      <span class="play" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 16 16"><path d="M4 2 L14 8 L4 14 Z" fill="currentColor"></path></svg>
+      </span>
+      <span class="title">{title}</span>
+    </span>
+  </button>
+
+  <div class="consent" hidden data-video-consent>
+    <p>
+      Deze video wordt geladen via YouTube. Daarvoor zijn cookies van derden nodig. Geef je daar toestemming voor?
+    </p>
+    <div class="consent-actions">
+      <button type="button" class="btn btn--light" data-video-accept>Video laden</button>
+      <a href={watchUrl} target="_blank" rel="noopener noreferrer" class="consent-link">Bekijk op YouTube ↗</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--ink);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .poster {
+    position: absolute;
+    inset: 0;
+    border: none;
+    padding: 0;
+    background: var(--ink);
+    display: block;
+    width: 100%;
+  }
+
+  .poster:hover {
+    opacity: 0.96;
+  }
+
+  .poster :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.72;
+  }
+
+  .overlay {
+    position: absolute;
+    left: clamp(20px, 3vw, 40px);
+    right: clamp(20px, 3vw, 40px);
+    bottom: clamp(20px, 3vw, 40px);
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    text-align: left;
+    color: #fff;
+  }
+
+  .play {
+    flex: none;
+    width: clamp(56px, 6vw, 80px);
+    height: clamp(56px, 6vw, 80px);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .title {
+    font-family: var(--font-serif);
+    font-size: clamp(22px, 3vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    max-width: 18em;
+    text-wrap: balance;
+  }
+
+  .consent {
+    position: absolute;
+    inset: 0;
+    background: rgba(22, 35, 63, 0.92);
+    color: var(--paper);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 18px;
+    padding: clamp(20px, 4vw, 56px);
+  }
+
+  .consent p {
+    margin: 0;
+    max-width: 32em;
+    font-size: clamp(15px, 1.4vw, 18px);
+    line-height: 1.55;
+    color: var(--on-ink-soft);
+  }
+
+  .consent-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+  }
+
+  .consent-link {
+    color: var(--blue-light);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .consent-link:hover {
+    color: #fff;
+  }
+
+  .video :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+</style>
+
+<script>
+  import { hasThirdPartyConsent, onConsent, readConsent, saveConsent } from '@/scripts/consent';
+
+  document.querySelectorAll<HTMLElement>('[data-video]').forEach((root) => {
+    const notice = root.querySelector<HTMLElement>('[data-video-consent]')!;
+    let wanted = false;
+
+    const load = () => {
+      if (root.querySelector('iframe')) return;
+      const frame = document.createElement('iframe');
+      frame.src = root.dataset.embed!;
+      frame.title = root.dataset.title!;
+      frame.allow = 'autoplay; encrypted-media; picture-in-picture';
+      frame.allowFullscreen = true;
+      root.replaceChildren(frame);
+      frame.focus();
+    };
+
+    root.querySelector('[data-video-play]')!.addEventListener('click', () => {
+      wanted = true;
+      if (hasThirdPartyConsent()) load();
+      else {
+        notice.hidden = false;
+        notice.querySelector<HTMLElement>('[data-video-accept]')!.focus();
+      }
+    });
+
+    root.querySelector('[data-video-accept]')!.addEventListener('click', () => {
+      saveConsent(!!readConsent()?.ana, true);
+    });
+
+    // Consent may also be given via the cookie notice while the prompt is open.
+    onConsent((c) => {
+      if (wanted && c?.third) load();
+    });
+  });
+</script>

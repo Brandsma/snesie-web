@@ -1,0 +1,366 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '@/lib/images';
+
+/* One photo per headline line, plus the default (index 3). */
+const pics = [
+  { src: 'kalligrafiemeester-wu.jpg', cap: 'Kalligrafie met meester Wu' },
+  { src: 'tjon-moek-sang.jpg', cap: 'Iconisch gebouw Tjon Moek Sang' },
+  { src: 'bibliotheek-rotterdam.jpg', cap: 'Snesie& in de Centrale Bibliotheek Rotterdam' },
+  { src: 'hakka-grootmoeder.jpg', cap: 'Hakka grootmoeder met haar nakomelingen' },
+];
+const DEFAULT = 3;
+const lines = ['Chinese zielen', 'Surinaamse wortels', 'Nederlandse stemmen'];
+---
+
+<section id="top" class="hero" data-hero>
+  <Image
+    src={img('chan-hua-flower.png')}
+    alt="Chan Hua, Hakka bloem in Hakka blauw"
+    widths={[400, 640, 900, 1200]}
+    sizes="clamp(300px, 52vw, 780px)"
+    class="flower"
+    loading="eager"
+    fetchpriority="high"
+    data-flower
+  />
+
+  <div class="inner container">
+    <div class="entry">
+      <div class="entry-head">
+        <span class="entry-word">snesie</span>
+        <span class="entry-lang">Sranan Tongo</span>
+      </div>
+      <p>Het Surinaamse woord voor Chinees of Chinezen.</p>
+    </div>
+
+    <div class="lines-wrap">
+      <h1 class="lines">
+        {
+          lines.map((line, i) => (
+            <span class="line" tabindex="0" data-line={i} style={`--indent: ${['0px', 'clamp(0px, 9vw, 150px)', 'clamp(0px, 18vw, 300px)'][i]}`}>
+              <span class="line-text">{line}</span>
+              {i < lines.length - 1 && <span class="visually-hidden">, </span>}
+            </span>
+          ))
+        }
+      </h1>
+    </div>
+
+    <figure class="frame">
+      <div class="frame-pics">
+        {
+          pics.map((p, i) => (
+            <Image
+              src={img(p.src)}
+              alt={p.cap}
+              widths={[260, 400, 560]}
+              sizes="(min-width: 980px) clamp(200px, 18vw, 280px), min(55vw, 240px)"
+              width={560}
+              height={700}
+              fit="cover"
+              loading={i === DEFAULT ? 'eager' : 'lazy'}
+              class:list={['pic', { 'is-active': i === DEFAULT }]}
+              data-pic={i}
+              aria-hidden={i === DEFAULT ? undefined : 'true'}
+            />
+          ))
+        }
+      </div>
+      <figcaption data-caption>{pics[DEFAULT].cap}</figcaption>
+    </figure>
+
+    <div class="foot">
+      <p>Doe mee: ontdek je roots, deel je verhaal en bouw met ons aan een inclusieve, levendige toekomst.</p>
+      <a href="#join" class="text-cta">Deel je verhaal →</a>
+      <a href="#verhaal" class="scroll">Scroll ↓</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .flower {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    right: clamp(-220px, -10vw, -40px);
+    top: clamp(40px, 8vh, 96px);
+    width: clamp(300px, 52vw, 780px);
+    height: auto;
+    transform: var(--flower-tf, none);
+    transition: transform 0.9s var(--ease-out);
+    will-change: transform;
+  }
+
+  .inner {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    width: 100%;
+    padding-top: clamp(104px, 14vh, 150px);
+    padding-bottom: clamp(28px, 4vh, 44px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Dictionary entry */
+  .entry {
+    max-width: 300px;
+    padding-top: 14px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .entry-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .entry-word {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  .entry-lang {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .entry p {
+    margin: 8px 0 0;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--body-soft);
+  }
+
+  /* Stepped headline */
+  .lines-wrap {
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+    padding-top: clamp(40px, 8vh, 96px);
+  }
+
+  .lines {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2px, 0.6vh, 10px);
+    font-size: inherit;
+  }
+
+  .line {
+    display: flex;
+    align-items: baseline;
+    padding-left: calc(clamp(64px, 7vw, 96px) + clamp(12px, 1.6vw, 24px));
+    margin-left: var(--indent);
+    cursor: default;
+    transition: opacity 0.35s ease;
+  }
+
+  .line:focus-visible {
+    outline-offset: 6px;
+  }
+
+  .line-text {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(42px, 7.4vw, 112px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    transition: color 0.35s ease;
+  }
+
+  .hero[data-active] .line {
+    opacity: 0.32;
+  }
+
+  .hero[data-active='0'] .line[data-line='0'],
+  .hero[data-active='1'] .line[data-line='1'],
+  .hero[data-active='2'] .line[data-line='2'] {
+    opacity: 1;
+  }
+
+  .hero[data-active='0'] .line[data-line='0'] .line-text,
+  .hero[data-active='1'] .line[data-line='1'] .line-text,
+  .hero[data-active='2'] .line[data-line='2'] .line-text {
+    color: var(--blue);
+  }
+
+  /* Photo frame: in-flow on mobile, behind the text on desktop */
+  .frame {
+    margin: 32px auto 0 0;
+    width: min(55%, 240px);
+    transform: rotate(-2deg);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  .frame-pics {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background: var(--sand-deep);
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .pic {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.08);
+    transition:
+      opacity 0.5s ease,
+      transform 1.2s var(--ease-out);
+  }
+
+  .pic.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  figcaption {
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--body-soft);
+    min-height: 2.7em;
+  }
+
+  @media (min-width: 980px) {
+    .frame {
+      position: absolute;
+      z-index: 0;
+      margin: 0;
+      left: var(--gutter);
+      bottom: clamp(96px, 14vh, 150px);
+      width: clamp(200px, 18vw, 280px);
+    }
+  }
+
+  /* Bottom row */
+  .foot {
+    margin-top: clamp(36px, 6vh, 64px);
+    padding-top: 20px;
+    border-top: 1px solid var(--sand-line);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px 40px;
+  }
+
+  .foot p {
+    margin: 0;
+    max-width: 26em;
+    font-size: clamp(16px, 1.2vw, 18px);
+    line-height: 1.55;
+    color: var(--body-soft);
+  }
+
+  .scroll {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .scroll:hover {
+    color: var(--blue);
+  }
+</style>
+
+<script>
+  import { onScroll } from '@/scripts/scroll';
+  import { isDesktop, prefersReducedMotion } from '@/scripts/motion';
+
+  const hero = document.querySelector<HTMLElement>('[data-hero]')!;
+  const flower = hero.querySelector<HTMLElement>('[data-flower]')!;
+  const pics = [...hero.querySelectorAll<HTMLElement>('[data-pic]')];
+  const caption = hero.querySelector<HTMLElement>('[data-caption]')!;
+  const lines = [...hero.querySelectorAll<HTMLElement>('[data-line]')];
+  const DEFAULT = 3;
+
+  let active: number | null = null;
+  let hx = 0;
+  let hy = 0;
+  let y = window.scrollY;
+
+  const updateFlower = () => {
+    if (prefersReducedMotion()) {
+      flower.style.removeProperty('--flower-tf');
+      return;
+    }
+    const rot = y * 0.035 + hx * 5 + (active === null ? 0 : active * 8 - 8);
+    flower.style.setProperty(
+      '--flower-tf',
+      `translate(${(hx * -22).toFixed(1)}px, ${(y * 0.14 + hy * -16).toFixed(1)}px) rotate(${rot.toFixed(2)}deg) scale(${active === null ? 1 : 1.04})`,
+    );
+  };
+
+  const setActive = (i: number | null) => {
+    active = i;
+    if (i === null) hero.removeAttribute('data-active');
+    else hero.dataset.active = String(i);
+    const cur = i ?? DEFAULT;
+    pics.forEach((p, idx) => {
+      p.classList.toggle('is-active', idx === cur);
+      p.toggleAttribute('aria-hidden', idx !== cur);
+    });
+    caption.textContent = pics[cur].getAttribute('alt');
+    updateFlower();
+  };
+
+  lines.forEach((line, i) => {
+    line.addEventListener('mouseenter', () => isDesktop() && setActive(i));
+    line.addEventListener('focus', () => setActive(i));
+    // On touch screens a tap toggles the line.
+    line.addEventListener('click', () => {
+      if (!isDesktop()) setActive(active === i ? null : i);
+    });
+    line.addEventListener('blur', () => {
+      if (!hero.contains(document.activeElement) || !lines.includes(document.activeElement as HTMLElement)) setActive(null);
+    });
+  });
+
+  hero.addEventListener('mousemove', (e) => {
+    if (!isDesktop()) return;
+    const r = hero.getBoundingClientRect();
+    hx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    hy = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    updateFlower();
+  });
+
+  hero.addEventListener('mouseleave', () => {
+    hx = 0;
+    hy = 0;
+    setActive(null);
+  });
+
+  // Only animate while the hero is (nearly) on screen.
+  onScroll((scrollY) => {
+    if (scrollY > window.innerHeight * 1.5 && y > window.innerHeight * 1.5) return;
+    y = scrollY;
+    updateFlower();
+  });
+</script>

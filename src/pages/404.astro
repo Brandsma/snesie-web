@@ -1,0 +1,69 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { img } from '@/lib/images';
+---
+
+<BaseLayout title="Pagina niet gevonden" description="Deze pagina bestaat niet (meer).">
+  <section class="nf container">
+    <Image src={img('chan-hua-flower.png')} alt="" width={560} widths={[280, 560]} sizes="(min-width: 980px) 420px, 60vw" class="flower" />
+    <div class="text">
+      <div class="label label--small">404</div>
+      <h1>Deze pagina bestaat niet (meer).</h1>
+      <p class="body-lg">
+        Misschien is de link verouderd, of is het verhaal verhuisd. Begin opnieuw op de homepage of kijk wat er binnenkort
+        te doen is.
+      </p>
+      <div class="actions">
+        <a href="/" class="btn btn--primary">Naar de homepage</a>
+        <a href="/events/" class="btn btn--secondary">Bekijk de events</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    overflow: hidden;
+    min-height: 80vh;
+    padding-top: clamp(120px, 17vh, 180px);
+    padding-bottom: var(--section-y);
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .flower {
+    position: absolute;
+    right: clamp(-160px, -8vw, -40px);
+    top: clamp(60px, 10vh, 120px);
+    width: clamp(240px, 36vw, 420px);
+    mix-blend-mode: multiply;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .text {
+    position: relative;
+    max-width: 44rem;
+  }
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(44px, 7vw, 108px);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    margin-top: 20px;
+  }
+
+  .body-lg {
+    margin: 28px 0 0;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+</style>

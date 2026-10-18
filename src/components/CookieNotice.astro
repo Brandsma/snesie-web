@@ -1,0 +1,239 @@
+---
+const categories = [
+  {
+    id: 'func',
+    label: 'Functionele cookies',
+    desc: 'Noodzakelijk voor het goed functioneren van de website. Deze plaatsen wij altijd.',
+    locked: true,
+  },
+  {
+    id: 'ana',
+    label: 'Analytische cookies',
+    desc: 'Helpen ons te meten hoe de website wordt gebruikt, zodat we hem kunnen verbeteren.',
+  },
+  {
+    id: 'third',
+    label: 'Cookies van derden',
+    desc: "Voor het insluiten van video's (YouTube) en het delen via social media.",
+  },
+];
+---
+
+<div class="cookie-wrap" role="dialog" aria-modal="false" aria-labelledby="cookie-title" hidden data-cookie>
+  <div class="panel">
+    <div class="intro">
+      <h2 id="cookie-title">Cookies</h2>
+      <p>
+        Wij gebruiken functionele cookies om de website goed te laten werken. Met jouw toestemming plaatsen we ook
+        analytische cookies en cookies van derden, zoals YouTube en social media. <a href="/algemene-voorwaarden/#cookies"
+          >Lees ons cookiebeleid</a
+        >.
+      </p>
+    </div>
+
+    <div class="settings" hidden data-cookie-settings>
+      {
+        categories.map((c) => (
+          <div class="row">
+            <div class="row-text">
+              <span class="row-label" id={`cookie-${c.id}`}>
+                {c.label}
+              </span>
+              <span class="row-desc">{c.desc}</span>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              class="switch"
+              aria-checked={c.locked ? 'true' : 'false'}
+              aria-labelledby={`cookie-${c.id}`}
+              disabled={c.locked}
+              data-switch={c.locked ? undefined : c.id}
+            >
+              <span class="knob" />
+            </button>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn--outline-light" data-cookie-secondary>Instellingen</button>
+      <button type="button" class="btn btn--outline-light" data-cookie-necessary>Alleen noodzakelijk</button>
+      <button type="button" class="btn btn--light" data-cookie-all>Alles accepteren</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cookie-wrap {
+    position: fixed;
+    left: clamp(12px, 2vw, 24px);
+    right: clamp(12px, 2vw, 24px);
+    bottom: clamp(12px, 2vw, 24px);
+    z-index: 95;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .panel {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 720px;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(22, 35, 63, 0.28);
+    padding: clamp(20px, 2.4vw, 28px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .intro {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  h2 {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--on-ink-soft);
+  }
+
+  p a {
+    color: var(--blue-light);
+  }
+
+  .settings {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(245, 240, 231, 0.18);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(245, 240, 231, 0.18);
+  }
+
+  .row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .row-label {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .row-desc {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--on-ink-soft);
+  }
+
+  .switch {
+    width: 52px;
+    height: 30px;
+    border-radius: 999px;
+    border: none;
+    padding: 3px;
+    display: flex;
+    justify-content: flex-start;
+    background: rgba(245, 240, 231, 0.25);
+    transition: background-color 0.2s;
+  }
+
+  .switch[aria-checked='true'] {
+    background: var(--blue);
+    justify-content: flex-end;
+  }
+
+  .switch:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .knob {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--paper);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .actions .btn {
+    height: 46px;
+    padding-block: 0;
+    padding-inline: 20px;
+  }
+</style>
+
+<script>
+  import { OPEN_EVENT, readConsent, saveConsent } from '@/scripts/consent';
+
+  const root = document.querySelector<HTMLElement>('[data-cookie]')!;
+  const settings = root.querySelector<HTMLElement>('[data-cookie-settings]')!;
+  const secondary = root.querySelector<HTMLButtonElement>('[data-cookie-secondary]')!;
+  const switches = [...root.querySelectorAll<HTMLButtonElement>('[data-switch]')];
+  const state: Record<string, boolean> = { ana: false, third: false };
+
+  const sync = () => {
+    switches.forEach((s) => s.setAttribute('aria-checked', String(state[s.dataset.switch!])));
+  };
+
+  const show = (withSettings: boolean) => {
+    const saved = readConsent();
+    state.ana = !!saved?.ana;
+    state.third = !!saved?.third;
+    sync();
+    settings.hidden = !withSettings;
+    secondary.textContent = withSettings ? 'Keuze opslaan' : 'Instellingen';
+    root.hidden = false;
+  };
+
+  const save = (ana: boolean, third: boolean) => {
+    saveConsent(ana, third);
+    root.hidden = true;
+  };
+
+  switches.forEach((s) =>
+    s.addEventListener('click', () => {
+      const key = s.dataset.switch!;
+      state[key] = !state[key];
+      sync();
+    }),
+  );
+
+  secondary.addEventListener('click', () => {
+    if (settings.hasAttribute('hidden')) show(true);
+    else save(state.ana, state.third);
+  });
+  root.querySelector('[data-cookie-necessary]')!.addEventListener('click', () => save(false, false));
+  root.querySelector('[data-cookie-all]')!.addEventListener('click', () => save(true, true));
+  window.addEventListener(OPEN_EVENT, () => show(true));
+
+  if (!readConsent()) show(false);
+</script>

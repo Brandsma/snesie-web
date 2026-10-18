@@ -1,0 +1,21 @@
+{
+  "order": 3,
+  "tag": "Agenda",
+  "author": "Snesie&",
+  "read": "1 minuut lezen",
+  "title": "Jaarlijks Symposium Oral History 2026 in Amersfoort: 11-12-2026",
+  "hero": "symposium.jpg",
+  "ratio": "16/9",
+  "blocks": [
+    {
+      "t": "lead",
+      "text": "Jaarlijks Symposium Oral History 2026 in Amersfoort: 11-12-2026"
+    },
+    {
+      "t": "link",
+      "label": "Lees verder",
+      "text": "Het volledige bericht op snesie.nl",
+      "href": "https://www.snesie.nl/post/jaarlijks-symposium-oral-history-2026-in-amersfoort-11-12-2026"
+    }
+  ]
+}

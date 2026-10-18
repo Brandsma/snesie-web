@@ -1,0 +1,234 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '@/lib/images';
+
+const panels = [
+  {
+    id: 'missie',
+    tab: 'Onze missie',
+    title: '“Coming home!”',
+    label: 'Wij willen',
+    intro:
+      'Snesie& zet zich in voor het zichtbaar maken, onderzoeken en delen van de geschiedenis en het erfgoed van Chinees-Surinaamse, met name de Hakka-Chinese, gemeenschappen.',
+    outro: 'Door onderzoek, erfgoedparticipatie en maatschappelijke dialoog brengen we familieverhalen, geschiedenis en cultuur samen.',
+    items: [
+      'De vergeten geschiedenis van Chinese contractarbeid en migratie documenteren',
+      'De zwijgcultuur tussen generaties doorbreken',
+      'Historisch bewustzijn en identiteitskracht versterken',
+      'Bijdragen aan een inclusiever verhaal over de Nederlandse koloniale geschiedenis.',
+    ],
+  },
+  {
+    id: 'visie',
+    tab: 'Onze visie',
+    title: 'Weet je waar je vandaan komt, dan weet je waar je heen gaat.',
+    label: 'In deze samenleving',
+    intro:
+      'Snesie& streeft naar een samenleving waarin Chinees-Surinaams erfgoed wordt erkend als een integraal onderdeel van de Nederlandse geschiedenis.',
+    outro: '',
+    items: [
+      'zijn diverse perspectieven structureel opgenomen in onderwijs en publieke instellingen',
+      'hebben gemeenschappen regie over hun eigen erfgoed en verhalen',
+      'voelen nieuwe generaties zich verbonden met hun geschiedenis',
+      'draagt gedeeld erfgoed en historisch bewustzijn bij aan inclusie en sociale cohesie.',
+    ],
+  },
+];
+---
+
+<section id="missie" class="mv container" data-mv>
+  <div class="switch" role="group" aria-label="Missie of visie">
+    {
+      panels.map((p, i) => (
+        <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} aria-controls={`panel-${p.id}`} data-mv-tab={p.id}>
+          {p.tab}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="stack">
+    {
+      panels.map((p, i) => (
+        <div class="panel" id={`panel-${p.id}`} aria-hidden={i === 0 ? 'false' : 'true'} data-mv-panel={p.id}>
+          <h2>{p.title}</h2>
+          <div class="cols">
+            <div>
+              <p class="intro">{p.intro}</p>
+              {p.outro && <p class="intro intro--more">{p.outro}</p>}
+              {p.id === 'visie' && (
+                <figure>
+                  <Image
+                    src={img('tjon-moek-sang.jpg')}
+                    alt="Iconisch gebouw Tjon Moek Sang"
+                    widths={[560, 1000]}
+                    sizes="(min-width: 640px) 560px, 100vw"
+                  />
+                  <figcaption>Iconisch gebouw Tjon Moek Sang</figcaption>
+                </figure>
+              )}
+            </div>
+            <div>
+              <div class="label label--muted list-label">{p.label}</div>
+              {p.items.map((t, k) => (
+                <div class="item">
+                  <span class="num">0{k + 1}</span>
+                  <span class="text">{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .mv {
+    padding-block: var(--section-y);
+    scroll-margin-top: 72px;
+  }
+
+  .switch {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    border: 1px solid var(--sand-line-strong);
+  }
+
+  .switch button {
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: transparent;
+    color: var(--ink);
+    transition:
+      background-color 0.25s,
+      color 0.25s;
+  }
+
+  .switch button[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* Without JS both panels are shown one after the other and the switch is hidden. */
+  .mv:not([data-enhanced]) .switch {
+    display: none;
+  }
+
+  .stack {
+    display: grid;
+    gap: var(--section-y);
+    margin-top: clamp(28px, 4vh, 44px);
+  }
+
+  /* Enhanced: both panels share one grid cell, so the height stays constant. */
+  [data-enhanced] .panel {
+    grid-area: 1 / 1;
+    transition: opacity 0.35s ease;
+  }
+
+  [data-enhanced] .panel[aria-hidden='true'] {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(40px, 5.4vw, 84px);
+    line-height: 1.02;
+    letter-spacing: -0.028em;
+    max-width: 16em;
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: var(--col-gap);
+    margin-top: clamp(40px, 6vh, 64px);
+  }
+
+  .intro {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--body-soft);
+    max-width: 30em;
+  }
+
+  .intro--more {
+    margin-top: 20px;
+  }
+
+  figure {
+    margin: 32px 0 0;
+  }
+
+  figure :global(img) {
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 390 / 290;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  figcaption {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  .list-label {
+    padding-bottom: 16px;
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 16px;
+    align-items: baseline;
+    padding: 22px 0;
+    border-top: 1px solid var(--sand-line);
+  }
+
+  .num {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--blue);
+  }
+
+  .text {
+    font-family: var(--font-serif);
+    font-size: clamp(22px, 2vw, 28px);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-mv]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-mv-tab]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-mv-panel]')];
+
+    const show = (id: string) => {
+      tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.mvTab === id)));
+      panels.forEach((p) => {
+        const on = p.dataset.mvPanel === id;
+        p.setAttribute('aria-hidden', String(!on));
+        p.inert = !on;
+      });
+    };
+
+    tabs.forEach((t) => t.addEventListener('click', () => show(t.dataset.mvTab!)));
+    root.setAttribute('data-enhanced', '');
+    show(tabs[0].dataset.mvTab!);
+  });
+</script>

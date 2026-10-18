@@ -1,0 +1,31 @@
+{
+  "order": 1,
+  "tag": "Open call",
+  "author": "Snesie&",
+  "read": "1 minuut lezen",
+  "title": "Jouw geschiedenis, jouw stem: schrijf mee over contractarbeid en identiteit",
+  "hero": "essay.jpg",
+  "ratio": "16/9",
+  "blocks": [
+    {
+      "t": "lead",
+      "text": "Ben jij 18 - 35 jaar, Chinees-Surinaams en woon je in Amsterdam of omgeving? Onderzoek jouw familiegeschiedenis, identiteit en perspectief in een essay onder professionele begeleiding."
+    },
+    {
+      "t": "p",
+      "text": "Aanmelden vóór 26 oktober 2026 via info@collectiefcontractarbeid.org"
+    },
+    {
+      "t": "link",
+      "label": "Aanmelden",
+      "text": "info@collectiefcontractarbeid.org",
+      "href": "mailto:info@collectiefcontractarbeid.org"
+    },
+    {
+      "t": "link",
+      "label": "Download",
+      "text": "Flyer: Jouw geschiedenis, jouw stem (PDF)",
+      "href": "/files/flyer-jouw-geschiedenis-jouw-stem.pdf"
+    }
+  ]
+}

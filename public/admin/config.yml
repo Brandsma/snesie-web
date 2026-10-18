@@ -1,0 +1,111 @@
+# Decap CMS configuration. Every save is a git commit; the site rebuilds on deploy.
+# The fields mirror the schemas in src/content.config.ts: keep both in sync.
+backend:
+  name: git-gateway # Netlify Identity. For GitHub login use: name: github, repo: <org>/<repo>
+  branch: main
+
+# `npx decap-server` + `local_backend: true` lets you test the CMS locally.
+local_backend: true
+
+locale: nl
+media_folder: src/assets/img
+public_folder: src/assets/img
+
+collections:
+  - name: events
+    label: Events
+    files:
+      - name: events
+        label: Agenda
+        file: src/content/events.json
+        format: json
+        fields:
+          - label: Events
+            name: events
+            widget: list
+            summary: '{{fields.start}} · {{fields.listTitle}}'
+            fields:
+              - { label: 'ID (deel van de URL, bv. oso-adam)', name: id, widget: string, pattern: ['^[a-z0-9-]+$', 'Alleen kleine letters, cijfers en -'] }
+              - { label: 'Soort (bv. Erfgoed-tori-oso)', name: type, widget: string }
+              - { label: Stad, name: city, widget: string }
+              - { label: Titel (eventpagina), name: title, widget: string }
+              - { label: Titel (agenda), name: listTitle, widget: string }
+              - { label: Korte titel (homepage), name: homeTitle, widget: string, required: false }
+              - { label: Ondertitel, name: sub, widget: string, required: false }
+              - { label: 'Start (JJJJ-MM-DD of JJJJ-MM-DDTUU:MM)', name: start, widget: string, pattern: ['^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$', 'Gebruik 2026-10-31 of 2026-10-31T13:00'] }
+              - { label: 'Eindtijd (UU:MM)', name: end, widget: string, required: false }
+              - { label: 'Tijd (tekst, bv. 13.00–17.30 uur)', name: time, widget: string, required: false }
+              - { label: Datum is een aanmelddeadline, name: deadline, widget: boolean, default: false }
+              - { label: Locatie (kort), name: venue, widget: string }
+              - { label: Waar (volledig), name: where, widget: string }
+              - { label: Adres (voor routebeschrijving), name: address, widget: string, required: false }
+              - { label: Afbeelding, name: image, widget: image }
+              - { label: Aanmeldlink, name: signup, widget: string, required: false }
+              - { label: Deelname, name: price, widget: string }
+              - { label: Samenvatting (agenda), name: summary, widget: text }
+              - { label: 'Andere link (i.p.v. eventpagina)', name: link, widget: string, required: false }
+              - { label: Knoptekst, name: cta, widget: string, default: 'Meer info →' }
+              - label: 'Tekst eventpagina (leeg = geen eventpagina)'
+                name: body
+                widget: list
+                required: false
+                typeKey: t
+                types:
+                  - { label: Intro, name: lead, widget: object, fields: [{ label: Tekst, name: text, widget: text }] }
+                  - { label: Alinea, name: p, widget: object, fields: [{ label: Tekst, name: text, widget: text }] }
+                  - label: Spreker
+                    name: speaker
+                    widget: object
+                    fields: [{ label: Naam, name: name, widget: string }, { label: Tekst, name: text, widget: text }]
+      - name: archive
+        label: Eerdere events (archief)
+        file: src/content/event-archive.json
+        format: json
+        fields:
+          - label: Archief
+            name: archive
+            widget: list
+            summary: '{{fields.date}} · {{fields.title}}'
+            fields:
+              - { label: 'ID (uniek, bv. 2026-07-16-kalligrafie)', name: id, widget: string }
+              - { label: 'Datum (JJJJ-MM-DD)', name: date, widget: string, pattern: ['^\d{4}-\d{2}-\d{2}$', 'Gebruik 2026-07-16'] }
+              - { label: Titel, name: title, widget: string }
+
+  - name: blog
+    label: Blog
+    folder: src/content/blog
+    extension: json
+    format: json
+    create: true
+    slug: '{{slug}}'
+    identifier_field: title
+    summary: '{{order}} · {{title}}'
+    fields:
+      - { label: Titel, name: title, widget: string }
+      - { label: 'Volgorde (1 = bovenaan)', name: order, widget: number, value_type: int }
+      - { label: Label, name: tag, widget: string }
+      - { label: Auteur, name: author, widget: string, default: 'Snesie&' }
+      - { label: 'Datum (JJJJ-MM-DD)', name: date, widget: string, required: false }
+      - { label: Leestijd, name: read, widget: string, default: '1 minuut lezen' }
+      - { label: Hoofdafbeelding, name: hero, widget: image }
+      - { label: 'Verhouding (bv. 3/2)', name: ratio, widget: string, default: '3/2' }
+      - { label: Onderschrift, name: caption, widget: string, required: false }
+      - label: Inhoud
+        name: blocks
+        widget: list
+        typeKey: t
+        types:
+          - { label: Intro, name: lead, widget: object, fields: [{ label: Tekst, name: text, widget: text }] }
+          - { label: Alinea, name: p, widget: object, fields: [{ label: Tekst, name: text, widget: text }] }
+          - label: Link
+            name: link
+            widget: object
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: Tekst, name: text, widget: string }
+              - { label: URL, name: href, widget: string }
+          - label: Fotogalerij
+            name: gallery
+            widget: object
+            fields: [{ label: "Foto's", name: images, widget: list, field: { label: Foto, name: image, widget: image } }]
+          - { label: Fotocredit, name: credit, widget: object, fields: [{ label: Tekst, name: text, widget: string }] }

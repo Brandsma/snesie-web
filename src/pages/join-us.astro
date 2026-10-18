@@ -1,0 +1,482 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { img } from '@/lib/images';
+import { SITE } from '@/lib/site';
+
+// DRAFT copy (volunteer lists): to be confirmed by the foundation.
+const volunteer = [
+  {
+    title: 'Wat kan een vrijwilliger doen',
+    items: [
+      'Helpen bij de organisatie van events en workshops, zoals de Erfgoed-tori-oso’s',
+      'Gasten ontvangen en begeleiden tijdens bijeenkomsten',
+      'Foto’s en video’s maken bij activiteiten',
+      'Meehelpen met social media, de website en de nieuwsbrief',
+      'Oude foto’s en documenten helpen digitaliseren',
+      'Ondersteunen bij kookworkshops en culturele activiteiten',
+    ],
+  },
+  {
+    title: 'Wat kan je van ons verwachten',
+    items: [
+      'Een warme, betrokken gemeenschap',
+      'Je bepaalt zelf hoeveel tijd je geeft; ook eenmalig meehelpen kan',
+      'Je leert de verhalen en tradities van de Chinees-Surinaamse gemeenschap kennen',
+      'Begeleiding door het Snesie&-team',
+      'Ervaring is niet nodig',
+    ],
+  },
+];
+
+const researcher = [
+  {
+    title: 'Wat is een Community Researcher',
+    items: [
+      'Je hebt Chinese Surinaamse voorouders en voelt je verbonden met die achtergrond – of je nu opgegroeid bent met verhalen over Suriname, China of allebei',
+      'Je hebt grote affiniteit met de Chinees-Surinaamse cultuur en hebt een nieuwsgierige, open houding',
+      'Je bent geïnteresseerd in geschiedenis, erfgoed, migratie of identiteit – en je vindt het belangrijk dat verhalen worden doorverteld',
+      'Je kunt goed luisteren en communiceert makkelijk met andere mensen',
+      'Je spreekt en schrijft Nederlands; kennis van het Sranan, Hakka of Cantonees is mooi meegenomen!',
+      'Je kunt zelfstandig werken en hebt een flexibele beschikbaarheid (de uren zijn in overleg)',
+      'Je hebt geen onderzoeksdiploma nodig – wel motivatie en een groot hart voor verhalen.',
+    ],
+  },
+  {
+    title: 'Wat gaat een Community Researcher doen',
+    items: [
+      'Interviews voeren met ouderen en families',
+      'Verhalen vastleggen (oral history)',
+      'Werken met foto’s, archieven en herinneringen',
+      'Meewerken aan podcasts en een digitaal archief',
+      'Je krijgt training en begeleiding – ervaring is niet nodig!',
+    ],
+  },
+  {
+    title: 'Wat kan je van ons verwachten',
+    items: [
+      'Je leert families kennen met hun verhalen',
+      'Een unieke leerervaring: je krijgt een training in oral history, interviewtechnieken en archivering',
+      'Er is een projectvergoeding beschikbaar (reiskosten en een kleine vergoeding voor de bestede projecturen)',
+      'De kans om echte impact te maken: jouw werk wordt onderdeel van het Haags verhaal',
+      'Gemeentearchief of het Centrum van familiegeschiedenissen blijft voor altijd bewaard',
+      'Werken met een divers en gedreven team',
+      'Flexibele uren – perfect naast je studie of andere bezigheden',
+      'Een project dat er echt toe doet: we doorbreken een zwijgcultuur en geven een gemeenschap een stem.',
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Join us"
+  description="Snesie& zoekt gepassioneerde vrijwilligers en Community Researchers. Help mee de verhalen van de Chinees-Surinaamse gemeenschap vast te leggen."
+  current="join"
+  ogImage="join-us-banner.jpg"
+>
+  <section class="hero container">
+    <Image src={img('chan-hua-flower.png')} alt="" widths={[230, 460]} sizes="(min-width: 1440px) 230px, 16vw" class="flower" />
+    <div class="label label--small">Join us</div>
+    <h1>Opo, kondreman <em>un' opo!</em></h1>
+    <p class="intro">Wij zoeken gepassioneerde vrijwilligers en Community researchers!</p>
+    <div class="roles">
+      <a href="#vrijwilliger" class="role role--vol">
+        <span class="role-text"><span class="role-num">01</span><span class="role-name">Vrijwilliger</span></span>
+        <span class="role-arrow" aria-hidden="true">↓</span>
+      </a>
+      <a href="#community-researcher" class="role role--cr">
+        <span class="role-text"><span class="role-num">02</span><span class="role-name">Community Researcher</span></span>
+        <span class="role-arrow" aria-hidden="true">↓</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="vrijwilliger" class="band band--vol">
+    <div class="container band-inner">
+      <div class="band-head">
+        <span class="band-num">01</span>
+        <h2>Vrijwilliger</h2>
+      </div>
+      <div class="lists lists--two">
+        {
+          volunteer.map((l) => (
+            <div class="list">
+              <h3>{l.title}</h3>
+              <ul>
+                {l.items.map((i) => (
+                  <li>{i}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section id="community-researcher" class="band band--cr">
+    <div class="container band-inner">
+      <div class="band-head">
+        <span class="band-num">02</span>
+        <h2>Vacature Community Researchers</h2>
+      </div>
+      <div class="lists lists--three">
+        {
+          researcher.map((l) => (
+            <div class="list">
+              <h3>{l.title}</h3>
+              <ul>
+                {l.items.map((i) => (
+                  <li>{i}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="contact container">
+    <h2>Laat van je horen, we wachten op je!</h2>
+    <p class="contact-intro">Zie jij jezelf in een van deze (vrijwilligers) functie?</p>
+    <div class="cards">
+      <a href={`mailto:${SITE.email}`} class="card card--mail">
+        <span class="card-text"><span class="card-label">Stuur direct een email naar</span><span class="card-title">{SITE.email}</span></span>
+        <span class="card-arrow" aria-hidden="true">→</span>
+      </a>
+      <a href={SITE.googleForm} target="_blank" rel="noopener noreferrer" class="card card--form">
+        <span class="card-text"><span class="card-label">Of maak gebruik van ons</span><span class="card-title">Google form</span></span>
+        <span class="card-arrow" aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <a href={SITE.googleForm} target="_blank" rel="noopener noreferrer" class="banner">
+      <Image
+        src={img('join-us-banner.jpg')}
+        alt="Snesie& groep in 2026"
+        widths={[640, 1000, 1400, 1942]}
+        sizes="(min-width: 1320px) 1224px, calc(100vw - 2 * clamp(20px, 4vw, 48px))"
+      />
+    </a>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    position: relative;
+    padding-top: clamp(120px, 17vh, 180px);
+    padding-bottom: clamp(48px, 7vh, 80px);
+  }
+
+  .flower {
+    position: absolute;
+    right: clamp(0px, 3vw, 48px);
+    top: clamp(96px, 14vh, 150px);
+    width: clamp(110px, 16vw, 230px);
+    height: auto;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(52px, 9vw, 140px);
+    line-height: 0.94;
+    letter-spacing: -0.035em;
+    margin-top: 20px;
+    max-width: 9em;
+    position: relative;
+  }
+
+  h1 em {
+    color: var(--blue);
+  }
+
+  .intro {
+    margin: 32px 0 0;
+    font-family: var(--font-serif);
+    font-size: clamp(24px, 2.4vw, 34px);
+    line-height: 1.2;
+    max-width: 20em;
+  }
+
+  .roles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 12px;
+    margin-top: clamp(40px, 6vh, 64px);
+  }
+
+  .role {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    padding: clamp(22px, 2.4vw, 32px);
+    min-height: 150px;
+    border-radius: 4px;
+    text-decoration: none;
+    border-top: 4px solid;
+    transition: background-color 0.2s;
+  }
+
+  .role--vol {
+    background: var(--sand);
+    color: var(--ink);
+    border-top-color: var(--terracotta);
+  }
+
+  .role--vol:hover {
+    background: #e4daca;
+    color: var(--ink);
+  }
+
+  .role--cr {
+    background: var(--ink);
+    color: var(--paper);
+    border-top-color: var(--blue);
+  }
+
+  .role--cr:hover {
+    background: #1c2c4f;
+    color: var(--paper);
+  }
+
+  .role-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .role-num {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 20px;
+  }
+
+  .role--vol .role-num {
+    color: var(--error);
+  }
+
+  .role--cr .role-num {
+    color: var(--blue-light);
+  }
+
+  .role-name {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 2.8vw, 40px);
+    line-height: 1;
+  }
+
+  .role-arrow {
+    font-size: 22px;
+  }
+
+  /* Bands */
+  .band {
+    scroll-margin-top: 60px;
+  }
+
+  .band--vol {
+    background: var(--sand);
+    color: var(--ink);
+    --accent: var(--terracotta);
+    --num: var(--terracotta);
+    /* Small text needs the darker terracotta for 4.5:1 on sand. */
+    --label: var(--error);
+    --line: var(--sand-line-strong);
+    --text: var(--body-soft-2);
+  }
+
+  .band--cr {
+    background: var(--ink);
+    color: var(--paper);
+    --accent: var(--blue);
+    --num: var(--blue-light);
+    --label: var(--blue-light);
+    --line: rgba(245, 240, 231, 0.18);
+    --text: var(--on-blue-soft);
+  }
+
+  .band-inner {
+    padding-block: var(--section-y-sm);
+  }
+
+  .band-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .band-num {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(24px, 2.4vw, 32px);
+    color: var(--num);
+  }
+
+  .band h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(38px, 5vw, 72px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+
+  .lists {
+    display: grid;
+    gap: clamp(32px, 4vw, 64px);
+    margin-top: clamp(36px, 5vh, 56px);
+  }
+
+  .lists--two {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  }
+
+  .lists--three {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 980px) {
+    .lists--three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .list h3 {
+    margin: 0 0 16px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--label);
+  }
+
+  .list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .list li {
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--text);
+    text-wrap: pretty;
+  }
+
+  /* Contact */
+  .contact {
+    padding-block: var(--section-y-sm);
+  }
+
+  .contact h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 4.6vw, 68px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+
+  .contact-intro {
+    margin: 20px 0 0;
+    font-size: 17px;
+    color: var(--body-soft);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: clamp(22px, 2.4vw, 32px);
+    border-radius: 4px;
+    text-decoration: none;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s;
+  }
+
+  .card--mail {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .card--mail:hover {
+    background: var(--blue-dark);
+    color: var(--paper);
+  }
+
+  .card--form {
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid var(--sand-line-strong);
+  }
+
+  .card--form:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .card-label {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .card--mail .card-label {
+    color: var(--blue-light);
+  }
+
+  .card--form .card-label {
+    color: var(--muted);
+  }
+
+  .card-title {
+    font-family: var(--font-serif);
+    font-size: clamp(24px, 2.4vw, 32px);
+    overflow-wrap: anywhere;
+  }
+
+  .card-arrow {
+    font-size: 24px;
+  }
+
+  .banner {
+    display: block;
+    margin-top: 12px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--sand);
+  }
+
+  .banner :global(img) {
+    width: 100%;
+    aspect-ratio: 971 / 245;
+    object-fit: cover;
+  }
+</style>
