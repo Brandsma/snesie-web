@@ -1,3 +1,8 @@
+---
+// Decap CMS. Served as a page (not from public/) so /admin/ also works on the dev server.
+// Its config lives in public/admin/config.yml.
+---
+
 <!doctype html>
 <html lang="nl">
   <head>
@@ -8,6 +13,6 @@
   </head>
   <body>
     <!-- Decap CMS: edits the JSON files in src/content via git. See README "Content beheren". -->
-    <script src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"></script>
+    <script is:inline src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"></script>
   </body>
 </html>

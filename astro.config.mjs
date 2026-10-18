@@ -3,9 +3,11 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://www.snesie.nl',
+  // Public URL of the deployment (canonical links, sitemap, .ics URLs). Set SITE_URL
+  // for preview deployments; anything other than www.snesie.nl is kept out of search engines.
+  site: process.env.SITE_URL || 'https://www.snesie.nl',
   trailingSlash: 'ignore',
-  integrations: [sitemap()],
+  integrations: [sitemap({ filter: (page) => !page.includes('/admin/') })],
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
   image: {
     // Self-hosted images are optimised at build time (sharp → webp/avif).

@@ -4,7 +4,7 @@ import { getImage } from 'astro:assets';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import CookieNotice from '@/components/CookieNotice.astro';
-import { SITE, type NavKey } from '@/lib/site';
+import { SITE, isIndexable, type NavKey } from '@/lib/site';
 import { img } from '@/lib/images';
 // Preloaded: the serif carries every headline (and the home page's LCP text).
 import serifLatin from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
@@ -36,6 +36,7 @@ const ogUrl = new URL(og.src, Astro.site ?? SITE.url).href;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {!isIndexable(Astro.site) && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#F5F0E7" />
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

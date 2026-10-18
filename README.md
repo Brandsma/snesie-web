@@ -65,11 +65,11 @@ Conventions:
 Events, the event archive and blog posts are JSON files in `src/content/`.
 Edit them directly, or through the CMS at `/admin/` (Decap CMS):
 
-- **Hosted on Netlify**: enable Identity + Git Gateway and invite editors. The
-  config is in `public/admin/config.yml`. Every save is a commit that
-  triggers a rebuild.
-- **Elsewhere / GitHub login**: change `backend` in `config.yml` to `github`
-  (needs an OAuth app).
+- **GitHub (current)**: editors log in with a GitHub account that has write access to
+  the repo. Every save is a commit that triggers a rebuild (1–2 minutes). Login needs a
+  small OAuth helper (GitHub OAuth app + e.g. a Cloudflare Worker); set its URL as
+  `base_url` in `public/admin/config.yml`.
+- **Netlify**: switch `backend` to `git-gateway` and enable Identity + Git Gateway.
 - **Locally**: run `npx decap-server` next to `npm run dev` and open
   `http://localhost:4321/admin/`.
 
@@ -86,9 +86,19 @@ When you add a field, update both `src/content.config.ts` and
 
 ## Deploying
 
-Any static host works (`dist/` is plain files). `netlify.toml` contains the
-build command, long-lived caching for `/_astro/*` and security headers. Set
-`PUBLIC_FORM_ENDPOINT` in the host's environment.
+`dist/` is plain static files, so any static host works.
+
+- **GitHub Pages (current preview)**: `.github/workflows/deploy.yml` tests, builds and
+  publishes on every push to `main`, at https://snesie.abebrandsma.com (`public/CNAME`).
+  `SITE_URL` sets the deployment's URL; any host other than www.snesie.nl gets `noindex`
+  and a closed robots.txt, so the preview never competes with the real site. Set
+  `PUBLIC_FORM_ENDPOINT` as a repository variable (Settings → Secrets and variables →
+  Actions → Variables).
+- **Netlify**: `netlify.toml` has the build command, long-lived caching for `/_astro/*`
+  and security headers (GitHub Pages ignores these).
+
+When moving to snesie.nl: change `public/CNAME`, drop `SITE_URL` from the workflow (the
+default is https://www.snesie.nl) and update DNS.
 
 ## Deviations from the design (deliberate)
 

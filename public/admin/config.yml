@@ -1,8 +1,13 @@
 # Decap CMS configuration. Every save is a git commit; the site rebuilds on deploy.
 # The fields mirror the schemas in src/content.config.ts: keep both in sync.
 backend:
-  name: git-gateway # Netlify Identity. For GitHub login use: name: github, repo: <org>/<repo>
+  name: github
+  repo: Brandsma/snesie-web
   branch: main
+  # GitHub login needs a small OAuth helper (GitHub's client secret can't live in the browser),
+  # e.g. a Cloudflare Worker running decap-proxy. Uncomment once it is deployed:
+  # base_url: https://<your-oauth-helper>.workers.dev
+  # On Netlify instead: name: git-gateway (Netlify Identity), and remove repo/base_url.
 
 # `npx decap-server` + `local_backend: true` lets you test the CMS locally.
 local_backend: true

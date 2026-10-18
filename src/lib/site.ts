@@ -11,6 +11,9 @@ export const SITE = {
     'https://docs.google.com/forms/d/e/1FAIpQLSdSYbNtZKMvjLYZIG_TjfUewuBf-_cmJ6GLApOqx61PP3R6BA/viewform',
 } as const;
 
+/** Only the real domain is indexed; preview deployments get noindex. */
+export const isIndexable = (site: URL | undefined) => !site || site.hostname === new URL(SITE.url).hostname;
+
 export type NavKey = 'wij' | 'events' | 'thuis' | 'media' | 'join';
 
 export const NAV: { key: NavKey; href: string; label: string }[] = [
