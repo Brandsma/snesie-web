@@ -1,0 +1,280 @@
+/*
+ * Blog post page styles.
+ * Shared by the page and the CMS preview (src/pages/admin), so both look the same.
+ * Every selector is namespaced under .post-page.
+ */
+.post-page .head {
+  padding-top: clamp(112px, 15vh, 160px);
+}
+
+.post-page .crumbs {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.post-page .crumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.post-page .crumbs a:hover {
+  color: var(--blue);
+}
+
+.post-page .sep {
+  color: var(--tree-line);
+}
+
+.post-page .here {
+  color: var(--blue);
+}
+
+.post-page h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(38px, 5.6vw, 84px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  margin-top: 24px;
+  max-width: 16em;
+}
+
+.post-page .metabar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 32px;
+  padding: 18px 0;
+  border-top: 1px solid var(--sand-line-strong);
+  border-bottom: 1px solid var(--sand-line-strong);
+  font-size: 15px;
+}
+
+.post-page .author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-page .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 18px;
+}
+
+.post-page .author-name {
+  font-weight: 600;
+}
+
+.post-page .muted {
+  color: var(--muted);
+}
+
+.post-page .share {
+  white-space: nowrap;
+  flex: none;
+  margin-left: auto;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.post-page .share[data-copied] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.post-page .hero {
+  margin: clamp(32px, 5vh, 56px) auto 0;
+}
+
+/* Never crop the hero: contain it in a sand frame. */
+.post-page .hero-frame {
+  width: 100%;
+  height: min(72vh, 760px);
+  border-radius: 4px;
+  background: var(--sand);
+  overflow: hidden;
+}
+
+.post-page .hero-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.post-page figcaption {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+.post-page .body {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(48px, 8vh, 88px) var(--gutter) clamp(64px, 10vh, 112px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.post-page .body p {
+  margin: 0;
+}
+
+.post-page .lead {
+  font-family: var(--font-serif);
+  font-size: clamp(23px, 2vw, 28px);
+  line-height: 1.38;
+  letter-spacing: -0.008em;
+}
+
+.post-page .p {
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--body-soft-2);
+}
+
+.post-page .credit {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.post-page .link-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 24px;
+  background: var(--white);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.post-page .link-card:hover {
+  color: var(--blue);
+}
+
+.post-page .link-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.post-page .link-label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.post-page .link-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.post-page .link-arrow {
+  flex: none;
+  font-size: 20px;
+}
+
+/* The gallery breaks out of the 760px text column on wide screens. */
+.post-page .gallery {
+  margin: 16px calc(-1 * clamp(0px, (100vw - 760px) / 2, 280px)) 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 10px;
+}
+
+.post-page .g-item {
+  display: block;
+  cursor: zoom-in;
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  background: var(--sand);
+}
+
+.post-page .g-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease-out);
+}
+
+.post-page .g-item:hover img,
+.post-page .g-item:focus-visible img {
+  transform: scale(1.05);
+}
+
+.post-page .pager {
+  background: var(--sand);
+}
+
+.post-page .pager-inner {
+  padding-block: clamp(56px, 9vh, 96px);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 16px;
+}
+
+.post-page .pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  border-radius: 4px;
+  background: var(--paper);
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.post-page .pager-link:hover {
+  color: var(--blue);
+}
+
+.post-page .pager-next {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.post-page .pager-label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.post-page .pager-title {
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 2vw, 28px);
+  line-height: 1.2;
+  text-wrap: pretty;
+}

@@ -1,6 +1,7 @@
 ---
 // Decap CMS. Served as a page (not from public/) so /admin/ also works on the dev server.
 // Its config lives in public/admin/config.yml.
+import previewStyles from '@/styles/cms-preview.css?url';
 ---
 
 <!doctype html>
@@ -11,8 +12,14 @@
     <meta name="robots" content="noindex" />
     <title>Snesie& · Beheer</title>
   </head>
-  <body>
+  <body data-preview-styles={previewStyles}>
     <!-- Decap CMS: edits the JSON files in src/content via git. See README "Content beheren". -->
     <script is:inline src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"></script>
+    <script>
+      import { registerPreviews } from '@/scripts/cms-preview';
+
+      // Module scripts run after the classic Decap script above, so CMS and h exist.
+      if (window.CMS && window.h) registerPreviews(window.CMS, window.h, document.body.dataset.previewStyles!);
+    </script>
   </body>
 </html>

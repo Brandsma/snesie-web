@@ -1,0 +1,48 @@
+/*
+ * Styles for the Decap CMS preview pane (src/pages/admin). Reuses the site's own
+ * stylesheets so previews look like the real pages.
+ */
+@import './global.css';
+@import './blog-post.css';
+@import './event-detail.css';
+
+/* The preview has no fixed site header, so drop the space reserved for it. */
+.post-page .head,
+.event-page .head {
+  padding-top: 48px;
+}
+
+/* Several events are previewed one after another. */
+.event-page + .event-page {
+  margin-top: 64px;
+  border-top: 1px solid var(--sand-line);
+}
+
+.preview-note {
+  margin: 0;
+  padding: 10px var(--gutter);
+  background: var(--sand);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.preview-archive {
+  padding: 48px var(--gutter);
+}
+
+.preview-archive li {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--sand-line);
+  font-family: var(--font-serif);
+  font-size: 21px;
+}
+
+.preview-archive li span {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
